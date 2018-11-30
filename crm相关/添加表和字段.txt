@@ -1,0 +1,11 @@
+添加表
+   cms_manage_excutor_detail 工单执行明细
+   cms_manage_excutor_log    执行明细记录
+    cms_manage_step_default  工单默认步骤
+    cms_manage_excutor_warn  工单执行预警表
+    cms_manage_step_config   工单配置页面表
+    cms_sale_manage_type     工单类型表
+添加字段
+sale_manage
+     1.添加客服负责人 字段 service_leading  
+     2.工单终止时间   字段 end_time

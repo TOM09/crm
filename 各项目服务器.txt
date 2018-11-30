@@ -1,0 +1,91 @@
+10月加班剩余时长   13小时
+
+
+
+①   
+VUE官网服务器
+
+华北 2 可用区 C
+60.205.147.130(公)
+10.26.161.28 (内)
+
+root
+sI9ZKt@Js%AFgFze
+
+文件路径/mnt/site/
+
+测试test.vipyidian.com
+正式vipyidian.com
+
+————————————————————————————————————
+②
+CRM服务器
+账号：root
+密码：su#6^p1t1lKi5CEy
+ip：47.94.137.255
+
+正式服文件路径“
+sftp://root@47.94.137.255//mnt/site/www.vipyipoint.com/public
+测试服文件路径 ：  sftp://root@47.94.137.255//mnt/site/vipyipoint_api/public
+
+测试服地址： test.vipyipoint.com
+正式服地址： www.vipyipoint.com
+
+账号：杨秋萍手机号 18519331339   密码：123456    jlBepuq2scpswkN9YJlnJidj96lDlJvK
+        宋慧慧   13969024012
+        姬利伟   15906324673   tIBEbS2gT7yy5jBaCS5lquds6xzjsOJY
+        宁芳	    13821519981    VsFyuTaPumFFBgDeeJ9UVanfMrsW5QHb
+
+ 吴明强 （驳回，没有提交按钮信息）  +86-13752973787
+
+王涛 13920553705
+
+码云地址：
+
+码云地址：
+https://gitee.com/Aselfimpr/pc_vue/invite_link?invite=7e99bb901af21027462fa1799814589d4cee6aa2eb5d262db7993663152babc5dfcfa29bad87b812
+
+——————————————————————————————————————————————————
+③
+云南一县一品：
+部署县一品服务器：
+   
+ip：  120.78.81.96
+   
+    
+用户名：  root
+    
+密码：%#Cb@Vl1R1oMyqTM
+
+sftp://root@120.78.81.96//phpstudy/www/ynshop
+
+打开shopnc/
+
+管理员 shopnc/admin   帐号admin  密码12345
+
+正式服务器     jpynyxyp.com
+
+————————————————————————————————————————————————————————
+
+繁荣中餐：
+17600302413	
+密码：k1234567890..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

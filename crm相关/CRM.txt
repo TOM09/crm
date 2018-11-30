@@ -1,0 +1,28 @@
+账号：root
+密码：su#6^p1t1lKi5CEy
+ip：47.94.137.255
+sftp://root@47.94.137.255//mnt/site/vipyipoint_api/public 
+
+9月份 分支 pc_vue0910
+
+测试服地址： test.vipyipoint.com
+正式服地址： www.vipyipoint.com
+账号：杨秋萍手机号 18519331339   密码：123456
+
+chrome://inspect/#devices
+
+码云地址：
+https://gitee.com/Aselfimpr/pc_vue/invite_link?invite=7e99bb901af21027462fa1799814589d4cee6aa2eb5d262db7993663152babc5dfcfa29bad87b812
+
+
+上传服务器时打开
+Beyond Compare 4 软件
+选择文件夹 folder Compare
+选择正确路径  覆盖dist和index文件
+
+
+正式服地址“
+sftp://root@47.94.137.255//mnt/site/www.vipyipoint.com/public
+
+测试服地址 ：  sftp://root@47.94.137.255//mnt/site/vipyipoint_api/public
+
