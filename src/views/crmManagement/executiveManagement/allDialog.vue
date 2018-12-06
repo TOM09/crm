@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<!-- 共用弹窗 -->
-		<el-dialog :visible.sync="mydialogAll1" :modal="false" @close='cancel' :title="dialogValChildTitle" width="560px" @open='whenOpen'>
+		<el-dialog :visible.sync="mydialogAll1" :modal="false" @close='cancel' :title="dialogValChildTitle" width="550px" @open='whenOpen'>
 
 			<div v-if="dialogValChildTitle == '首付款确认'">
 					<el-form ref='r_data' label-position="right" label-width="120px" :model="r_data">
@@ -40,10 +40,7 @@
 								</el-input>
 							</el-form-item>
 					</el-form>
-
 				</div>
-
-			
 
         <div v-else-if="dialogValChildTitle === '提交'">
             <div class='spaceBox'></div>
@@ -70,9 +67,34 @@
                   >
                 </el-input>
               </el-form-item>
-
+<div></div>
               <el-form-item label="附件 :">
                 <upload @fileStatus="fileStatus"  @fileTrue="fileTrue" :success="success" v-model="r_data.file" ></upload>
+                <!-- <upload @fileStatus="fileStatus"  @fileTrue2="fileTrue2" :success="success" v-model="r_data.file" ></upload>--> 
+				<!-- <el-upload
+					action="http://test.vipyipoint.com/getSts"
+					:data="r_data"
+					multiple
+					:file-list="r_data.file"
+					></el-upload>  -->
+					
+				<!-- <el-upload
+					class="upload-demo"
+					action="http://test.vipyipoint.com/getSts"
+					:data="r_data"
+					:on-remove="handleRemove"
+					:on-success = 'onSuccess'
+					:headers='Authorization'
+					@fileStatus="fileStatus"  
+					@fileTrue="fileTrue" 
+					:success="success"
+					multiple
+					:file-list="r_data.file"
+					v-model="r_data.file">
+					<el-button size="small" type="primary" @click='updatas'>点击上传</el-button>
+					</el-upload> -->
+					<!-- <div slot="tip" class="el-upload__tip">支持扩展名：.rar .zip .doc .docx .pdf .jpg...</div> -->
+
                 <span class='moreName'>支持扩展名：.rar .zip .doc .docx .pdf .jpg...</span>
               </el-form-item>
 
@@ -170,9 +192,13 @@
                         </el-option>									
                       </el-select>
                   </el-form-item>
-              
                   <el-form-item label="服务商 :" v-if="item.service_type == 2" :prop="'excutor_detail.' + index + '.provider_id'">                     
-                    <el-select class="inputWarn" placeholder="可选择一个服务商" v-model="item.provider_id" filterable>
+                    <el-select class="inputWarn"
+						filterable
+						allow-create
+						placeholder="可选择一个服务商"
+						v-model="item.provider_id" 
+						>
                         <el-option
                           v-for="item in CustomerBudinessMan"
                           :key="item.value"
@@ -210,15 +236,16 @@
                 </el-form-item>
 
                 <el-form-item label="合同价格 :" class='is-required'
-					:rules="[{ required: true, message: '请填写合同金额，且拆分的合同金额之和应等于执行工单的金额'},{ type: 'number', message: '合同金额必须为数字值'}]"
+					:rules="[{ required: true, message: '请填写合同金额，且拆分的合同金额之和应等于执行工单的金额'},
+							{ type: 'number', message: '合同金额必须为数字值'}]"
 				 	:prop="'excutor_detail.' + index + '.price'">
-                  <el-input
+                  <el-input-number
                       type="text"
                       placeholder="￥请输入"
                       class="inputWarn"
                       v-model.number="item.price"
                       >
-                  </el-input>
+                  </el-input-number>
                 </el-form-item>
 				
 				<el-button  v-if =" r_data.excutor_detail.length > 1" @click='deleteWork(index)' class='deleteWorkBtn'>删除</el-button>	
@@ -301,10 +328,11 @@
 
 <!-- :rules="[{ required: true, message: '请选择至少一位执行人',trigger:'blur'}]" -->
 						<el-form-item label="执行人 :" 
-							class='is-required' v-show='item.service_type == 1'
-							:prop="'detail.' + index + '.excutor_id'"
+							class='is-required' v-if='item.service_type == 1'
+							:prop="'detail[' + index + '].excutor_id'"
 							:rules="[{ required: true, message: '请选择至少一位执行人',trigger:'blur'}]"
 							>							
+									<!-- :value="selectData" -->
 							<el-select  
 								v-model="item.excutor_id"
 									multiple 
@@ -312,6 +340,7 @@
 									value-key="dd_id"
 									placeholder="可选择多个执行人"
 									class="elText elText2"
+									@change='changeselectData'
 								>
 								<el-option
 									v-for="item in person"
@@ -322,16 +351,16 @@
 							</el-select>									
 						</el-form-item>
 
-						<el-form-item label="服务商 :" v-show='item.service_type == 2'
-						:prop="'detail.' + index + '.excutor_id'" 
-						:rules="[{ required: true, message: '请选择至少一位服务商',trigger:'blur'}]"
+						<el-form-item label="服务商 :" v-if='item.service_type == 2'
+						:prop="'detail.' + index + '.provider_id'" 
+						:rules="[{ required: true, message: '请选择一位服务商',trigger:'blur'}]"
 						 class='is-required'
 						 >							
 							<el-select  
-								multiple
+								allow-create
 								filterable
 								placeholder="可选择一个服务商"
-								v-model="item.excutor_id" 
+								v-model="item.provider_id" 
 								class="elText elText2"
 								>
 								<el-option
@@ -344,7 +373,7 @@
 							</el-select>	 
 						</el-form-item>
 
-						<el-form-item :prop="'detail[' + index + '].id'">							
+						<el-form-item :prop="'detail.' + index + '.id'">							
 							<input  type="hidden" v-model="item.id" >
 						</el-input>	
 
@@ -441,7 +470,7 @@
 			<div v-else-if="dialogValChildTitle === '终止'">
 				<div class='spaceBox'></div>
 				<el-form label-position='right' label-width="90px" :model="r_data">
-					<el-form-item label="说明 :">
+					<el-form-item label="说明 :"  class='is-required'>
 						<el-input    
 							placeholder="请输入"              
 							type="textarea"
@@ -459,23 +488,27 @@
 				我是通用
 			</div>
 			<span slot="footer" class="dialog-footer">
-	      <el-button @click="cancel">取 消</el-button>
-	      <el-button type="primary" @click="dialogAllBtn('r_data')">确 定</el-button>
-	    </span>
+				<el-button @click="cancel">取 消</el-button>
+				<el-button type="primary" @click="dialogAllBtn('r_data')">确 定</el-button>
+			</span>
 		</el-dialog>
 	</div>
 </template>
 
 <script>
 import upload from "../.././components/s_customer/fiieDataCe";
+import cookies from 'js-cookie';
       
 export default {
 	components: {
 		upload
 	},
-	props:['dialogAll1','dialogValChildTitle','dialogId','menuId5'],
+	props:['dialogAll1','dialogValChildTitle','dialogId','menuId5','message','annexData'],
 	data() {
-		return {
+		return {	
+			Authorization:{
+				Authorization: cookies.get('access_token'),
+			},
 			manage_id:0,
 			// newWork:{
 			// 	"product_id": [
@@ -488,6 +521,7 @@ export default {
 			// 	 'service_type':'1'
 			// },
 			myMenuId5:false,
+			cookisdata:'',
 			i:-1,
 			activeName:'first',
             CustomerBudinessMan:[],  //所有服务商
@@ -557,7 +591,9 @@ export default {
 					
 				],
 				excutor_id:[],
-				pay_abc:''
+				pay_abc:'',
+				contract:false,
+				description:''
 			},
 			
 			r_form: {
@@ -592,6 +628,7 @@ export default {
 			description: ""
       	}
 	},
+	
 	created () {
 		this.r_data.manage_id = this.$route.query.manage_id;
 		this.r_form.manage_id = this.$route.query.manage_id;
@@ -616,6 +653,15 @@ export default {
 		},
 		person(){
 			return this.$store.state.app.person;
+		},
+		selectData(){
+			if(this.value && this.value.split){
+			// 	console.log(this.value,this.value.split)
+				return this.value.split(',')
+			}
+			// }else{
+				// return []
+			// }
 		}
 	},
 	watch:{
@@ -633,6 +679,42 @@ export default {
 		}
 	},
 	methods: {
+		changeselectData(){
+			console.log(this.selectData)
+		},
+		onSuccess(response, file, fileList){
+			this.r_data.file = fileList;
+			console.log(this.r_data.file)
+				// console.log(response, file, fileList)
+		},
+		updatas(){
+			console.log(this.r_data.file)
+		},
+ 		handleRemove(path,path2){
+			 console.log(path,path2)
+			this.$get('delOssFile', {path: path})
+				.then((data) => {
+					if(data.code) {
+						console.log(1)
+						let urls = this.urls;
+						for(let i in urls) {
+							if(urls[i].path === path) {
+								this.urls.splice(i, 1);
+								this.file.splice(i, 1);
+							};
+						}
+						this.$message({
+							type: 'success',
+							message: '删除成功'
+						});
+						this.percentage = 0;
+						// this.uploadFile = false;
+					}
+				})
+				.catch((data) => {
+					this.$message.error('服务器错误，请稍后重试');
+				})
+		},
 		alertaaa(num){
 			alert(num)
 		},
@@ -655,39 +737,44 @@ export default {
 			var valNum = parseInt(val.index) + 2;
 		},
 		whenOpen(){
-			if(this.dialogValChildTitle == '分单'){
+			if(this.dialogValChildTitle === '分单'){
 				this.addItem();				
 				this.dismantlingSelect();
-			}else if(this.dialogValChildTitle == '指派执行人'){ //undefined
+			}else if(this.dialogValChildTitle === '指派执行人'){ //undefined
 				this.addItem2();				
-			}else if(this.dialogValChildTitle == '首付款确认'){
+			}else if(this.dialogValChildTitle === '首付款确认'){
 				this.payMoneytype();				
-			}else if(this.dialogValChildTitle == '首付款确认2'){
-				// this.splitList();				
+			}else if(this.dialogValChildTitle === '提交'){
+				this.submitDataChild();				
 			}
 		},
 		
 		    // 共用事件中点击确认按钮时调用
 		dialogAllBtn(r_data) { 
-			if(this.dialogValChildTitle == '驳回'){
+			if(this.dialogValChildTitle === '驳回'){
 				this.workInfoRejectT()
-			}else if(this.dialogValChildTitle == '提交'){
+			}else if(this.dialogValChildTitle === '提交'){
 				this.referringFirst()
-			}else if(this.dialogValChildTitle == '终止'){
+			}else if(this.dialogValChildTitle === '终止'){
 				this.workEnd()
-			}else if(this.dialogValChildTitle == '首付款确认'){
+			}else if(this.dialogValChildTitle === '首付款确认'){
 				this.firstPay()
-			}else if(this.dialogValChildTitle == '分单'){
+			}else if(this.dialogValChildTitle === '分单'){
 				this.splitList(r_data)		
-			} else if(this.dialogValChildTitle == '指派AE'){
+			} else if(this.dialogValChildTitle === '指派AE'){
 				this.assignAe()
-			}else if(this.dialogValChildTitle == '指派执行人'){
+			}else if(this.dialogValChildTitle === '指派执行人'){
 				this.CustomerLder(r_data)
-			}else if(this.dialogValChildTitle == '开始执行'){
+			}else if(this.dialogValChildTitle === '开始执行'){
 				this.CustomerLderStart()
-			}else if(this.dialogValChildTitle == '完成'){
+			}else if(this.dialogValChildTitle === '完成'){
 				this.allFinsh()
 			}
+		},
+		submitDataChild(){
+			this.r_data.contract = this.message.contract;
+			this.r_data.description = this.message.description;
+			this.r_data.file = this.annexData;
 		},
 		referringFirst(){
 			if (!this.r_data.description) {
@@ -696,16 +783,7 @@ export default {
 				type: 'warning'
 			})
 			}else{
-				this.$post("manageNew/operateBtn", this.r_data
-				// {
-				// 	manage_id: this.manage_id,
-				// 	btn_no:this.r_data.btn_no,
-				// 	contract: this.r_data.contract,
-				// 	description: this.r_data.description,
-				// 	file: this.r_data.file,
-				// 	brife: this.r_data.brife
-				// }
-				)
+				this.$post("manageNew/operateBtn", this.r_data)
 				.then(data => {
 					if (data.code) {
 							this.$message({
@@ -732,15 +810,13 @@ export default {
             type: 'warning'
           })
         }else{
-		console.log(this.manage_id,this.r_data.reason,this.r_data.btn_no)
-
 			this.$post("manageNew/operateBtn", {
-				manage_id: this.manage_id,
+				manage_id: this.r_data.manage_id,
 				btn_no:this.r_data.btn_no,
 				reason: this.r_data.reason
 			})
 			.then(data => {
-				if (data.code) {
+				// if (data.code) {
 					this.$message({
                       message: '提交成功',
                       type: "success"
@@ -748,10 +824,10 @@ export default {
 					this.r_data.reason = '';
 					this.mydialogAll1 = false;
 					this.$router.go(0)
-                    this.$store.commit("removeTag", "workInfo");
-                    this.$store.commit("closePage", "workInfo");
+                    // this.$store.commit("removeTag", "workInfo");
+                    // this.$store.commit("closePage", "workInfo");
 					this.workOperateLog();
-				}
+				// }
 			}).catch(() => {
 				this.$message.error("服务器错误，请稍后重试");
 			});
@@ -870,11 +946,16 @@ export default {
 		},
 		//oss 上传控件
 		fileStatus(data) {
-			this.r_data.file = data;
+			console.log(data)
 			this.file = data;
+			console.log(this.r_data.file)
 		},
 		 fileTrue(data) {
+			 console.log(data)
 			this.success = data;
+		},
+		fileTrue2(data){
+			console.log(data)
 		},
 
 		cancel(){
@@ -921,10 +1002,11 @@ export default {
 				this.$message.error("服务器错误，请稍后重试");
 				});
 		},
+		//  开始执行
 		CustomerLderStart(){
 			this.$post("manageNew/operateBtn", this.r_data)
 				.then(data => {
-					if (data.code) {
+					// if (data.code) {
 						this.$message({
 							message: data.errorMsg,
 							type: "success"
@@ -932,85 +1014,52 @@ export default {
 						this.r_data = {};
 						this.mydialogAll1 = false;
 						this.$router.go(0)
-						this.$store.commit("removeTag", "workInfo");
-						this.$store.commit("closePage", "workInfo");
+						// this.$store.commit("removeTag", "workInfo");
+						// this.$store.commit("closePage", "workInfo");
 						this.workOperateLog();
-					} else {
-						this.$message({
-							message: data.errorMsg,
-							type: "warning"
-						});
-					}
+					// } else {
+						// this.$message({
+						// 	message: data.errorMsg,
+						// 	type: "warning"
+						// });
+					// }
 				})
 				.catch(() => {
 					this.$message.error("服务器错误，请稍后重试..");
 				});
 		},
-		// 指派执行人 && 开始执行
+		// 指派执行人
 		CustomerLder(r_data){
 			 this.$refs[r_data].validate((valid) => {
 				if (valid) {
 					this.$post("manageNew/operateBtn", this.r_data)
 					.then(data => {
-						if (data.code) {
+						// if (data.code) {
 							this.$message({
-								message: data.errorMsg,
+								message: '指派成功！',
 								type: "success"
 							});
 							this.r_data = {};
 							this.mydialogAll1 = false;
 							this.$router.go(0)
-							this.$store.commit("removeTag", "workInfo");
-							this.$store.commit("closePage", "workInfo");
+							// this.$store.commit("removeTag", "workInfo");
+							// this.$store.commit("closePage", "workInfo");
 							this.workOperateLog();
-						} else {
-							this.$message({
-								message: data.errorMsg,
-								type: "warning"
-							});
-						}
-					})
-					.catch(() => {
+						// } else {
+						// 	this.$message({
+						// 		message: data.errorMsg,
+						// 		type: "warning"
+							}).catch(() => {
 						this.$message.error("服务器错误，请稍后重试..");
 					});
-				} else {
-					return false;
-				}
-			});
-
-		// 	if(!this.r_data.excutor_id){
-		// 		this.$message({
-		// 			message: '请选择AE',
-		// 			type: 'warning'
-		// 		});
-		// 	}else{
-		// 		this.$post("manageNew/operateBtn", this.r_data)
-		// 			.then(data => {
-		// 				if (data.code) {
-		// 					this.$message({
-		// 						message: data.errorMsg,
-		// 						type: "success"
-		// 					});
-		// 					this.r_data = {};
-		// 					this.mydialogAll1 = false;
-		// 					this.$router.go(0)
-		// 					this.$store.commit("removeTag", "workInfo");
-		// 					this.$store.commit("closePage", "workInfo");
-		// 					this.workOperateLog();
-		// 				} else {
-		// 					this.$message({
-		// 						message: data.errorMsg,
-		// 						type: "warning"
-		// 					});
-		// 				}
-		// 		})
-		// 		.catch(() => {
-		// 			this.$message.error("服务器错误，请稍后重试..");
-		// 		});
-		// }
-		},
+						}else{
+						return false;
+					}
+				})
+			},
 		// 指派AE
 		assignAe(){
+			console.log(1)
 			if(!this.r_data.ae){
 				this.$message({
 					message: '请选择AE',
@@ -1021,21 +1070,23 @@ export default {
 					manage_id: this.manage_id,
 					btn_no:this.r_data.btn_no,
 					ae: this.r_data.ae,
+					remarks: this.r_data.remarks,
 				}).then(data => {
-						if (data.code) {
+				// 		if (data.code) {
 							this.$message({
-								message: data.errorMsg,
+								message: '指派成功',
 								type: "success"
 							});
-							this.r_data = {};
 							this.$router.go(0)
+							this.r_data.ae = '';
+							this.r_data.remarks = '';
 							this.mydialogAll1 = false;
-							this.$store.commit("removeTag", "workInfo");
-							this.$store.commit("closePage", "workInfo");
+				// 			this.$store.commit("removeTag", "workInfo");
+				// 			this.$store.commit("closePage", "workInfo");
 							this.workOperateLog();
-						} 
+				// 		} 
 					}).catch(() => {
-						this.$message.error("服务器错误，请稍后重试");
+				// 		this.$message.error("服务器错误，请稍后重试");
 					});
 				}
 		},
@@ -1119,16 +1170,11 @@ export default {
     		},
     // 驳回
     workInfoRejectT() {
-		console.log(1)
       this.$post("manageNew/operateBtn", {
         manage_id: this.$route.query.manage_id,
         btn_no:this.r_data.btn_no,
         remarks: this.r_data.remarks
-      })
-        .then(data => {
-		console.log(this.r_data)
-
-			
+      }).then(data => {
           if (data.code) {
             this.$message({
               message: data.errorMsg,
@@ -1150,7 +1196,7 @@ export default {
 		},
 		 // 操作日志
     workOperateLog() {
-      this.$get("manage/manageOperateLog", {
+      this.$get("manageNew/manageOperateLog", {
         manage_id: this.$route.query.manage_id
       })
         .then(data => {
@@ -1192,10 +1238,10 @@ export default {
 	top: 0;
 	left: 0;
 }
-.el-tabs__nav-wrap:after{
-	    background-color:#fff!important;
-			margin-bottom: 10px!important;
-}
+/* .el-tabs__nav-wrap:after{
+	background-color:#fff!important;
+	margin-bottom: 10px!important;
+} */
 .executiveTwo .el-tabs__header .el-tabs__nav{
 	/* text-align: center!important; */
 	float: none!important;

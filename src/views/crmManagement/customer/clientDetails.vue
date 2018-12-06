@@ -939,7 +939,6 @@
         this.$get( 'client/detail',{id:this.$route.params.id})
           .then( (data) => {
             let client = data.content.client;
-            console.log(client)
             this.clild = client.id;
             this.date.code = client.code;
             this.date.company = client.company;
@@ -951,7 +950,6 @@
             this.date.source = client.source_show;
             this.date.rank = client.rank.name;
             this.date.scale = client.scale.name;
-
             if(client.partner !== null){
               // 循环partner 如果没有数据  使用is——show为false，如果有数据 则为true
               for(let i = 0; i < client.partner.length; i++){
@@ -986,7 +984,6 @@
             this.projectData = data.content.project;
             this.button_root = data.content.button_root;
             this.partner = client.partner_edit ? client.partner_edit : [];
-            console.log(partner)
             this.partner_sel = client.partner;
             this.manage_percent = client.manage_percent;
             this.button_transfer = data.content.button_transfer;

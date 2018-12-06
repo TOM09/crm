@@ -19,6 +19,7 @@
         </div>
         <div style="margin-top: 20px;float: left;margin-bottom:20px;">
           <el-button type="primary" @click="queryClient">查询</el-button>
+          {{menuList}}
         </div>
       </el-form>
     </el-card>
@@ -438,6 +439,9 @@
       },
       person () {
         return this.$store.state.app.person;
+      },
+      menuList () {
+        return this.$store.state.app.menuList;        // 导航菜单
       }
     },
     methods:{

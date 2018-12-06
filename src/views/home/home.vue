@@ -2,7 +2,7 @@
   <div class="home-main">
     <div class="x_box">
       <p class="portrait">
-        <span v-if="userAvatar==''"> {{userName[0]}}</span>
+        <span v-if="userAvatar==''">{{userName[0]}}</span>
         <img v-if="userAvatar!=''" :src="userAvatar" alt="" width="50px"/>
       </p>
       <div class="x_content">
@@ -174,7 +174,6 @@
       stageChange(){
         this.$get('message/system',{time_range:this.value})
           .then((data) => {
-            console.log(data)
             if(data.code){
               this.is_show = data.content.is_show;
               this.form.taskList = data.content.task_list;

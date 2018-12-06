@@ -110,7 +110,6 @@ export default {
     },
     methods: {
         handleClick(tab) {
-            console.log(1)
             this.$router.push({name: 'workInfo', query: {manage_id: tab.manage_id, step: tab.step, task_id: tab.id}});
         },
         transfer(tab) {

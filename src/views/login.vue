@@ -69,7 +69,6 @@
             Cookies.set('userName', this.form.username);
             this.$get( 'login',this.form)
               .then( (data) => {
-                console.log(1,data)
                 if(data.code){
                   //设置登录菜单权限
                   if(data.content.menu_list.length < 1){

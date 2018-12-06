@@ -3,7 +3,7 @@
     <el-card>
       <div style="width: 100%;height: 80px;">
         <div class="s_details_company">
-          <div class="s_details_title"> {{ date.name }} ( {{ date.order_code }} )</div>
+          <div class="s_details_title" style="margin-top: 8px"> {{ date.name }} ( {{ date.order_code }} )</div>
           <div class="s_details_fuze">
             负责人：
             <el-popover trigger="hover" placement="top">
@@ -30,7 +30,7 @@
           <el-button type="primary" v-if="cancel_btn" round @click="x_cancel_btn">撤销审批</el-button>
           <el-button type="primary" v-if="del_btn" round @click="x_del_btn">删除订单</el-button>
           <el-button type="primary" v-if="button_root"  round @click="transferOthers">转移给他人</el-button>
-          <el-button type="primary" :disabled="!add_manage"   round @click="toggleSelectionAll">发起订单执行工单</el-button>
+          <el-button type="primary" :disabled="!add_manage" round @click="toggleSelectionAll">发起订单执行工单</el-button>
           <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" :append-to-body="true">
             <el-select v-model="adoptState" placeholder="请选择">
               <el-option
@@ -396,7 +396,7 @@
       <el-dialog title="产品信息" :visible.sync="orderList" :modal="false">
             <span>
                 <el-form ref="order" :model="order" label-width="150px">
-                    <el-form-item label="产品信息">
+                    <el-form-item label="产品信息(必填)">
                         <el-cascader
                             expand-trigger="hover"
                             filterable
@@ -414,8 +414,9 @@
                     <el-form-item label="标准价格（元）">
                         <el-input v-model="order.pro_std_price" class="s_order_new" placeholder="请输入价格"></el-input>
                     </el-form-item>
-                    <el-form-item label="合同价格（元）">
-                        <el-input v-model="order.pro_contract_price" class="s_order_new" placeholder="请输入价格"></el-input>
+                    <el-form-item label="合同价格(元)(必填)">
+                        <!-- <el-input v-model="order.pro_contract_price" class="s_order_new" placeholder="请输入价格"></el-input> -->
+                        <input @keydown="handleInput2" v-model="order.pro_contract_price" type="number" class="s_client_width s_client_widthInput" placeholder="请输入价格">
                     </el-form-item>
                     <el-form-item label="产品备注">
                         <el-input type="textarea" :rows="3" v-model="order.pro_brife" class="s_order_new" placeholder="请输入备注"></el-input>
@@ -490,9 +491,6 @@
           >
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="订单金额" prop="price">
-          <el-input v-model="form.price" class="s_order_new"></el-input>
-        </el-form-item>
         <el-form-item label="备注" prop="detail">
           <el-input v-model="form.detail" class="s_order_new"></el-input>
         </el-form-item>
@@ -511,83 +509,89 @@
           <el-table-column prop="pro_brife" label="备注"></el-table-column>
           <el-table-column fixed="right" label="操作" width="120">
             <template slot-scope="scope">
-              <el-button @click.native.prevent="deleteRow(scope.$index, form.pro_info)" type="text" size="small">
+              <el-button @click.native.prevent="deleteRow(scope.$index, form.pro_info,scope.row.pro_contract_price)" type="text" size="small">
                 移除
               </el-button>
             </template>
           </el-table-column>
         </el-table>
-        <el-button type="text"  @click="fileNew">新增附件</el-button>
-        <el-table :data="annexData" style="width: 100%">
-          <el-table-column fixed prop="name" label="附件名称"></el-table-column>
-          <el-table-column prop="person" label="创建人"></el-table-column>
-          <el-table-column prop="size_show" label="大小"></el-table-column>
-          <el-table-column prop="brife" label="备注"></el-table-column>
-          <el-table-column prop="create_time" label="创建时间"></el-table-column>
-          <el-table-column fixed="right" label="操作">
-            <template slot-scope="scope">
-              <el-button :disabled="(!scope.row.delete)" type="text" size="small" @click.native.prevent="deleteFile(scope.$index, annexData)">
-                移除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-form-item label="是否需要开票" prop="invoice">
-          <el-switch v-model="form.invoice"></el-switch>
+        <el-form-item label="订单金额" prop="price" class='priceStyle'>
+          <el-input disabled  placeholder="订单金额为合同累加金额" v-model="form.price" class="s_order_new"></el-input>
         </el-form-item>
-        <div v-if="form.invoice">
-          <el-form-item label="发票类型">
-            <el-select v-model="form.invoice_type" placeholder="请选择" class="s_order_new">
-              <el-option
-                  v-for="item in invoice_type"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
-              </el-option>
-            </el-select>
+        <div class='boxPrice'>
+          <el-form-item label="是否需要开票" prop="invoice">
+            <el-switch v-model="form.invoice"></el-switch>
           </el-form-item>
-          <el-form-item label="发票抬头" prop="invoice_title">
-            <el-input v-model="form.invoice_title" class="s_order_new"></el-input>
-          </el-form-item>
-          <el-form-item label="纳税人识别号" prop="tax_number">
-            <el-input v-model="form.tax_number" class="s_order_new"></el-input>
-          </el-form-item>
-          <div v-if="form.invoice_type == 2">
-            <el-form-item label="公司地址">
-              <el-select v-model="form.info.province" placeholder="请选择" class="s_order_new">
+          <div v-if="form.invoice">
+            <el-form-item label="发票类型">
+              <el-select v-model="form.invoice_type" placeholder="请选择" class="s_order_new">
                 <el-option
-                    v-for="item in province"
+                    v-for="item in invoice_type"
                     :key="item.id"
                     :label="item.name"
                     :value="item.id">
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="详细地址">
-              <el-input v-model="form.info.address" autosize placeholder="请输入详细地址" class="s_order_new"></el-input>
+            <el-form-item label="发票抬头" prop="invoice_title">
+              <el-input v-model="form.invoice_title" class="s_order_new"></el-input>
             </el-form-item>
-            <el-form-item label="公司电话" prop="info.phone">
-              <el-input v-model="form.info.phone" class="s_order_new"></el-input>
+            <el-form-item label="纳税人识别号" prop="tax_number">
+              <el-input v-model="form.tax_number" class="s_order_new"></el-input>
             </el-form-item>
-            <el-form-item label="银行名称" prop="info.bank_name">
-              <el-input v-model="form.info.bank_name" class="s_order_new"></el-input>
-            </el-form-item>
-            <el-form-item label="银行账号" prop="info.bank_number">
-              <el-input v-model="form.info.bank_number" class="s_order_new"></el-input>
-            </el-form-item>
+            <div v-if="form.invoice_type == 2">
+              <el-form-item label="公司地址">
+                <el-select v-model="form.info.province" placeholder="请选择" class="s_order_new">
+                  <el-option
+                      v-for="item in province"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="详细地址">
+                <el-input v-model="form.info.address" autosize placeholder="请输入详细地址" class="s_order_new"></el-input>
+              </el-form-item>
+              <el-form-item label="公司电话" prop="info.phone">
+                <el-input v-model="form.info.phone" class="s_order_new"></el-input>
+              </el-form-item>
+              <el-form-item label="银行名称" prop="info.bank_name">
+                <el-input v-model="form.info.bank_name" class="s_order_new"></el-input>
+              </el-form-item>
+              <el-form-item label="银行账号" prop="info.bank_number">
+                <el-input v-model="form.info.bank_number" class="s_order_new"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <span>
+              <div class="approvalN"  v-for="(item,index) in date.condition" :key="index">
+                  <el-form-item :label="item.name">
+                      <el-switch v-model="item.value" :active-value="true" :inactive-value="false"></el-switch>
+                  </el-form-item>
+              </div>
+          </span>
+          <div class="approvalN" style="margin-top: 5px;">
+            <p style="display: inline-block;margin-right: 5px;">审批通过后自动申请执行</p>
+            <el-switch v-model="form.auto_manage" :active-value="1" :inactive-value="0"></el-switch>
           </div>
         </div>
-        <span>
-                    <div class="approvalN"  v-for="(item,index) in date.condition" :key="index">
-                        <el-form-item :label="item.name">
-                            <el-switch   v-model="item.value" :active-value="true" :inactive-value="false"></el-switch>
-                        </el-form-item>
-                    </div>
-                </span>
-        <div class="approvalN" style="margin-top: 5px;">
-          <p style="display: inline-block;margin-right: 5px;">审批通过后自动申请执行</p>
-          <el-switch v-model="form.auto_manage" :active-value="1" :inactive-value="0"></el-switch>
-        </div>
+          <!-- <div style="width:100%;height:160px"></div> -->
+          <el-button type="text"  @click="fileNew">新增附件</el-button>
+          <el-table :data="annexData" style="width: 100%">
+            <el-table-column fixed prop="name" label="附件名称"></el-table-column>
+            <el-table-column prop="person" label="创建人"></el-table-column>
+            <el-table-column prop="size_show" label="大小"></el-table-column>
+            <el-table-column prop="brife" label="备注"></el-table-column>
+            <el-table-column prop="create_time" label="创建时间"></el-table-column>
+            <el-table-column fixed="right" label="操作">
+              <template slot-scope="scope">
+                <el-button :disabled="(!scope.row.delete)" type="text" size="small" @click.native.prevent="deleteFile(scope.$index, annexData)">
+                  移除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         <div style="clear: both"></div>
       </el-form>
       <span slot="footer">
@@ -647,6 +651,7 @@
     },
     data () {
       return {
+        pushpriceArray:[],
         value:true,
         dialogVisible:false,
         options:[
@@ -818,6 +823,10 @@
       }
     },
     methods:{
+       handleInput2(e) {
+            // 通过正则过滤小数点后两位
+          e.target.value = (e.target.value.match(/^\d*(\.?\d{0,1})/g)[0]) || null
+      },
       //弹出共同负责人弹窗
       charge() {
         this.dialogFormVisible1 = true;
@@ -973,6 +982,8 @@
             this.form.invoice_type = order.invoice_type.id;
             this.form.name = order.name;
             this.form.price = order.price;
+            var pushprice = parseFloat(order.price)
+            this.pushpriceArray.push(pushprice)
             this.form.detail = order.detail;
             if(this.form.contract_time.length == 0) {
               this.form.contract_time.push(order.service_start_time); // 合同日期
@@ -996,7 +1007,8 @@
             this.invoice_type = data.content.invoice_type;
             this.product = data.content.product;                                // 全部产品
             this.origin = data.content.origin;
-            this.province = data.content.province;                              // 地址
+            this.province = data.content.province;    
+            // 地址
             this.add_manage = data.content.add_manage;
             this.shop = data.content.shop;
             this.submit_btn = data.content.order.submit_btn ? true : false;     // 提交审批
@@ -1153,28 +1165,131 @@
         };
         this.orderList = true;
       },
+        accAdd(arg1, arg2) {
+          if (isNaN(arg1)) {
+              arg1 = 0;
+          }
+          if (isNaN(arg2)) {
+              arg2 = 0;
+          }
+          arg1 = Number(arg1);
+          arg2 = Number(arg2);
+          var r1, r2, m, c;
+          try {
+              r1 = arg1.toString().split(".")[1].length;
+          }
+          catch (e) {
+              r1 = 0;
+          }
+          try {
+              r2 = arg2.toString().split(".")[1].length;
+          }
+          catch (e) {
+              r2 = 0;
+          }
+          c = Math.abs(r1 - r2);
+          m = Math.pow(10, Math.max(r1, r2));
+          if (c > 0) {
+              var cm = Math.pow(10, c);
+              if (r1 > r2) {
+                  arg1 = Number(arg1.toString().replace(".", ""));
+                  arg2 = Number(arg2.toString().replace(".", "")) * cm;
+              } else {
+                  arg1 = Number(arg1.toString().replace(".", "")) * cm;
+                  arg2 = Number(arg2.toString().replace(".", ""));
+              }
+          } else {
+              arg1 = Number(arg1.toString().replace(".", ""));
+              arg2 = Number(arg2.toString().replace(".", ""));
+          }
+          return (arg1 + arg2) / m;
+      },
+      accSub(arg1, arg2) {
+        if (isNaN(arg1)) {
+            arg1 = 0;
+        }
+        if (isNaN(arg2)) {
+            arg2 = 0;
+        }
+        arg1 = Number(arg1);
+        arg2 = Number(arg2);
+
+        var r1, r2, m, n;
+        try {
+            r1 = arg1.toString().split(".")[1].length;
+        }
+        catch (e) {
+            r1 = 0;
+        }
+        try {
+            r2 = arg2.toString().split(".")[1].length;
+        }
+        catch (e) {
+            r2 = 0;
+        }
+        m = Math.pow(10, Math.max(r1, r2)); //last modify by deeka //动态控制精度长度
+        n = (r1 >= r2) ? r1 : r2;
+        return ((arg1 * m - arg2 * m) / m).toFixed(n);
+    },
       // 确定增加产品
       orderTrue() {
-        let pro_arr = this.product;
-        for(let i = 0; i < pro_arr.length; i++){
-          for(let j = 0; j < pro_arr[i]['children'].length; j++){
-            for(let x = 0; x < pro_arr[i]['children'][j]['children'].length; x++){
-              if(pro_arr[i]['children'][j]['children'][x]['value'] == this.numberShiYan){
-                this.order.name.name = pro_arr[i]['children'][j]['children'][x]['label'];
-                this.order.name.id = pro_arr[i]['children'][j]['children'][x]['value']
+            var pushprice2 = this.order.pro_contract_price;
+            this.form.price = this.accAdd(this.form.price,pushprice2);
+            // this.pushpriceArray.push(pushprice2)
+            // var s = 0;
+            // for (var i=this.pushpriceArray.length-1; i>=0; i--) {
+            //     s += this.pushpriceArray[i];
+            // }
+            // this.form.price =s.toFixed(2);
+        if(this.name_list.length == 0){
+              this.$message({
+                message: '请输入产品信息',
+                type: 'success'
+              });
+        }else if(!this.order.pro_contract_price){
+              this.$message({
+                message: '请输入合同价格',
+                type: 'success'
+              });
+        }else{
+            let pro_arr = this.product;
+            for(let i = 0; i < pro_arr.length; i++){
+              for(let j = 0; j < pro_arr[i]['children'].length; j++){
+                for(let x = 0; x < pro_arr[i]['children'][j]['children'].length; x++){
+                  if(pro_arr[i]['children'][j]['children'][x]['value'] == this.numberShiYan){
+                    this.order.name.name = pro_arr[i]['children'][j]['children'][x]['label'];
+                    this.order.name.id = pro_arr[i]['children'][j]['children'][x]['value']
+                  }
+                }
               }
             }
-          }
+            this.form.pro_info.push(this.order);
+            this.orderList = false;
         }
-        this.form.pro_info.push(this.order);
-        this.orderList = false;
       },
       // 选中产品的ID
       handleChange(value) {
         this.numberShiYan = value[2];
       },
       //移除产品信息
-      deleteRow(index, rows) {
+      deleteRow(index, rows,obj) {
+        // 接昨天：此处打开方式：为销售订单 订单列表 查看 更改订单信息
+          // var objNum = this.form.price - obj;
+          var objNum = this.accSub(this.form.price,obj)
+          if(objNum == 0){
+              this.form.price = ''
+            }else{
+              this.form.price = objNum;
+            }
+        // if(objNum == 0){
+        //   this.form.price = 0;
+        //   this.pushpriceArray = [];
+        //   if(this.form.price == 0){
+        //     this.form.price ='订单金额为产品合同价格之和';
+        //   }
+        // }else{
+        //   this.form.price = objNum.toFixed(2);
+        // }
         rows.splice(index, 1);
       },
       // 转移给他人
@@ -1358,7 +1473,7 @@
       },
       // 确定新增附件
       fileNewDialogTrue () {
-        this.$post( 'crmManagement/order/attachment',{id: this.$route.params.id, brife: this.brife, file: this.file})
+          this.$post( 'crmManagement/order/attachment',{id: this.$route.params.id, brife: this.brife, file: this.file})
           .then( (data) => {
             if(data.code){
               this.$message({
@@ -1690,4 +1805,30 @@
       font-size: 14px;
     }
   }
+  .boxPrice{
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .priceStyle{
+    margin-top: 22px;
+  }
+  .s_client_widthInput{
+      border-radius: 5px;
+      background: #eef2f9;
+      padding-left: 16px;
+      border: 1px solid #dcdfe6; 
+      width: 400px;
+    }
+     .s_client_widthInput::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #c3c7cf;
+    }
+    .s_client_widthInput:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+        color:    #c3c7cf;
+    }
+    .s_client_widthInput::-moz-placeholder { /* Mozilla Firefox 19+ */
+        color:    #c3c7cf;
+    }
+    .s_client_widthInput:-ms-input-placeholder { /* Internet Explorer 10+ */
+        color:    #c3c7cf;
+    }
 </style>

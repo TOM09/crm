@@ -56,9 +56,7 @@
             style="width: 300px">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="订单金额(必填)" prop="price">
-          <el-input v-model="ruleForm.price"    placeholder="请输入订单金额" class="s_client_width"></el-input>
-        </el-form-item>
+    
         <el-form-item label="是否印刷" prop="printing" style="float: left;">
           <el-switch v-model="ruleForm.printing"></el-switch>
         </el-form-item>
@@ -76,12 +74,15 @@
             <el-table-column fixed prop="pro_brife" label="备注"></el-table-column>
             <el-table-column fixed="right" label="操作" width="120">
               <template slot-scope="scope">
-                <el-button @click.native.prevent="deleteRow(scope.$index, ruleForm.pro_info)" type="text" size="small">
+                <el-button @click.native.prevent="deleteRow(scope.$index, ruleForm.pro_info,scope.row.pro_contract_price)" type="text" size="small">
                   移除
                 </el-button>
               </template>
             </el-table-column>
           </el-table>
+        </el-form-item>
+        <el-form-item label="订单金额" prop="price">
+          <el-input disabled  v-model="ruleForm.price" placeholder="订单金额为合同累加金额" class="s_client_width"></el-input>
         </el-form-item>
         <el-form-item label="是否开票" prop="invoice">
           <el-switch v-model="ruleForm.invoice"></el-switch>
@@ -175,8 +176,9 @@
               </el-input>
             </el-form-item>
             <el-form-item label="合同价格（元）(必填)">
-              <el-input v-model="order.pro_contract_price" type="number" class="s_client_width" placeholder="请输入价格">
-              </el-input>
+              <!-- <el-input @keydown="handleInput2" v-model="order.pro_contract_price" type="number" class="s_client_width" placeholder="请输入价格">
+              </el-input> -->
+                <input @keydown="handleInput2" v-model="order.pro_contract_price" type="number" class="s_client_width s_client_widthInput" placeholder="请输入价格">
             </el-form-item>
             <el-form-item label="产品备注">
               <el-input type="textarea" :rows="3" v-model="order.pro_brife" class="s_client_width" placeholder="请输入备注">
@@ -200,6 +202,7 @@
     components:{ upload },
     data () {
       return {
+        pushpriceArray:[],
         order: {},
         success:false,
         ruleForm: {
@@ -266,55 +269,151 @@
       }
     },
     methods: {
-      //oss
-      fileStatus(data) {
-        this.ruleForm.file = data;
-      },
-      orderBtn () {
-        this.order = {
-          product_id: {},
-          pro_period: '',
-          pro_std_price: '',
-          pro_contract_price: '',
-          pro_brife: '',
+     accAdd(arg1, arg2) {
+        if (isNaN(arg1)) {
+            arg1 = 0;
         }
-        this.orderList = true
-      },
-      handleChange (value) {
-        this.numberShiYan = value[2];
-      },
-      orderListTrue () {
-        let pro_arr = this.product;
-        for(let i = 0; i < pro_arr.length; i++){
-          for(let j = 0; j < pro_arr[i]['children'].length; j++){
-            for(let x = 0; x < pro_arr[i]['children'][j]['children'].length; x++){
-              if(pro_arr[i]['children'][j]['children'][x]['value'] == this.numberShiYan){
-                this.order.product_id.name = pro_arr[i]['children'][j]['children'][x]['label'];
-                this.order.product_id.id = pro_arr[i]['children'][j]['children'][x]['value'];
+        if (isNaN(arg2)) {
+            arg2 = 0;
+        }
+        arg1 = Number(arg1);
+        arg2 = Number(arg2);
+        var r1, r2, m, c;
+        try {
+            r1 = arg1.toString().split(".")[1].length;
+        }
+        catch (e) {
+            r1 = 0;
+        }
+        try {
+            r2 = arg2.toString().split(".")[1].length;
+        }
+        catch (e) {
+            r2 = 0;
+        }
+        c = Math.abs(r1 - r2);
+        m = Math.pow(10, Math.max(r1, r2));
+        if (c > 0) {
+            var cm = Math.pow(10, c);
+            if (r1 > r2) {
+                arg1 = Number(arg1.toString().replace(".", ""));
+                arg2 = Number(arg2.toString().replace(".", "")) * cm;
+            } else {
+                arg1 = Number(arg1.toString().replace(".", "")) * cm;
+                arg2 = Number(arg2.toString().replace(".", ""));
+            }
+        } else {
+            arg1 = Number(arg1.toString().replace(".", ""));
+            arg2 = Number(arg2.toString().replace(".", ""));
+        }
+        return (arg1 + arg2) / m;
+    },
+            handleInput2(e) {
+                // 通过正则过滤小数点后两位
+              e.target.value = (e.target.value.match(/^\d*(\.?\d{0,1})/g)[0]) || null
+          },
+          //oss
+          fileStatus(data) {
+            this.ruleForm.file = data;
+          },
+          orderBtn () {
+            this.order = {
+              product_id: {},
+              pro_period: '',
+              pro_std_price: '',
+              pro_contract_price: '',
+              pro_brife: '',
+            }
+            this.orderList = true
+          },
+          handleChange (value) {
+            this.numberShiYan = value[2];
+          },
+          getSum(preValue,curValue,index,array) {
+            return preValue += curValue;
+            },
+          orderListTrue () {
+              var pushprice = this.order.pro_contract_price
+              this.ruleForm.price = this.accAdd(this.ruleForm.price,pushprice);
+              if(this.ruleForm.price == 0){
+                this.ruleForm.price ='请输入金额'
+              }
+                // this.pushpriceArray.push(pushprice)
+                // var s = 0;
+                // for (var i=this.pushpriceArray.length-1; i>=0; i--) {
+                //     s += this.pushpriceArray[i];
+                // }
+                // console.log(s)
+                // this.ruleForm.price =s.toFixed(2);
+                // this.ruleForm.price = s;
+
+            let pro_arr = this.product;
+            for(let i = 0; i < pro_arr.length; i++){
+              for(let j = 0; j < pro_arr[i]['children'].length; j++){
+                for(let x = 0; x < pro_arr[i]['children'][j]['children'].length; x++){
+                  if(pro_arr[i]['children'][j]['children'][x]['value'] == this.numberShiYan){
+                    this.order.product_id.name = pro_arr[i]['children'][j]['children'][x]['label'];
+                    this.order.product_id.id = pro_arr[i]['children'][j]['children'][x]['value'];
+                  
+                  }
+                }
               }
             }
+            if (this.order.product_id.name && this.order.pro_contract_price) {
+              this.ruleForm.pro_info.push(this.order);
+              this.product_id = [];
+              this.orderList = false;
+            } else {
+              this.$message({
+                message: '请选择产品,合同价格',
+                type: 'warning'
+              })
+            }
+          },
+          deleteRow (index, rows,obj) {
+           var objNum = this.accSub(this.ruleForm.price, obj)
+            // var objNum = this.ruleForm.price - obj;
+            if(objNum == 0){
+              this.ruleForm.price = ''
+            }else{
+              this.ruleForm.price = objNum;
+            }
+            rows.splice(index, 1);
+          },
+        accSub(arg1, arg2) {
+          if (isNaN(arg1)) {
+              arg1 = 0;
           }
-        }
-        if (this.order.product_id.name && this.order.pro_contract_price) {
-          this.ruleForm.pro_info.push(this.order);
-          this.product_id = [];
-          this.orderList = false;
-        } else {
-          this.$message({
-            message: '请选择产品,合同价格',
-            type: 'warning'
-          })
-        }
-      },
-      deleteRow (index, rows) {
-        rows.splice(index, 1);
-      },
+          if (isNaN(arg2)) {
+              arg2 = 0;
+          }
+          arg1 = Number(arg1);
+          arg2 = Number(arg2);
+
+          var r1, r2, m, n;
+          try {
+              r1 = arg1.toString().split(".")[1].length;
+          }
+          catch (e) {
+              r1 = 0;
+          }
+          try {
+              r2 = arg2.toString().split(".")[1].length;
+          }
+          catch (e) {
+              r2 = 0;
+          }
+          m = Math.pow(10, Math.max(r1, r2)); //last modify by deeka //动态控制精度长度
+          n = (r1 >= r2) ? r1 : r2;
+          return ((arg1 * m - arg2 * m) / m).toFixed(n);
+        },
       fileTrue(data){
         this.success = data;
       },
       // 创建订单函数（保存）
       submitForm (formName) {
-        let reg  =/^[1-9]\d*$|^0$/;
+        // let reg  =/^[1-9]\d*$|^0$/;   
+        let reg = /^(-1|-2|([0-9]+(\.[0-9]{1,2})?))$/;
         this.ruleForm.btn = 1;
         let conditon = this.ruleForm.condition;
         for(let i = 0; i < conditon.length; i++) {
@@ -362,6 +461,7 @@
                   type: 'success'
                 });
                 this.success = true;
+                this.$router.go(0)
                 this.$refs[formName].resetFields();
                 this.$router.push({name: 'orderDetail', params: {id: data.content.id}})
               }else {
@@ -494,6 +594,25 @@
     }
     .approvalN:nth-child(3n){
       clear: both;
+    }
+    .s_client_widthInput{
+      border-radius: 5px;
+      background: #eef2f9;
+      padding-left: 16px;
+      border: 1px solid #dcdfe6; 
+    }
+
+    .s_client_widthInput::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #c3c7cf;
+    }
+    .s_client_widthInput:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+        color:    #c3c7cf;
+    }
+    .s_client_widthInput::-moz-placeholder { /* Mozilla Firefox 19+ */
+        color:    #c3c7cf;
+    }
+    .s_client_widthInput:-ms-input-placeholder { /* Internet Explorer 10+ */
+        color:    #c3c7cf;
     }
   }
 

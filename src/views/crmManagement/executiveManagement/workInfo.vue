@@ -31,15 +31,11 @@
           </div>
 
           <div class="workDetailsRight">
-            <!-- <el-col v-for="item in menu" :key="item.index" :span = '6'>
-              <el-button class='workDetailsButton' type="primary" @click="workReject" v-if="item.id==1">{{ item.value }}</el-button>
-              <el-button class='workDetailsButton' style="background-color: #ff2e56;color: #FFFFFF" @click="workEnd" v-if="item.id==2" >{{ item.value }}</el-button>
-              <el-button class='workDetailsButton' type="primary" @click="show" v-if="item.id==3">{{ item.value }}</el-button>
-              <el-button class='workDetailsButton' type="primary" @click="determine" v-if="item.id==4">{{ item.value }}</el-button>
-            </el-col> -->
-              <el-button class='workDetailsButton' type="primary" v-for="item in menu" :key="item.index" @click="workAll(item.id,item.value)">{{ item.value }}</el-button>
+              <el-button type="danger" v-for="item in menu" :key="item.index" @click="workAll(item.id,item.value)" class="workDetailsButton" v-show='item.id==2'>{{ item.value }}</el-button>
+              <el-button type="primary" v-for="item in menu" :key="item.index" @click="workAll(item.id,item.value)" class="workDetailsButton" v-show='item.id!=2'>{{ item.value }}</el-button>
+              <!-- <el-button class="workDetailsButton">提交</el-button> -->
           </div>
-
+                   <!-- class='workDetailsButton'  :class="{'workDetailsButtonOver':item.id==2,'workDetailsButton':true}"-->
         </div>
         <div class="workDetailsBottom">
           <div class="workDetailsBottomMessage" v-if="task_type == 2">已回款金额：<span class="detailsMessageBottomText">{{ message.sum_price}}</span></div>
@@ -78,16 +74,17 @@
    
 <!-- 下部详情 -->
     <div class="workInfo_content">
-      <el-tabs value="first"  @tab-click='workOperateLog2'>
+      <el-tabs value="first"  @tab-click='workOperateLog2' class="workOperateLog22">
         <el-tab-pane v-model="tabActiveName" label="详情" name="first">
           <div class="progress_bar">
-            <div class="first_style_title">
+            <div class="first_style_title first_style_titleBorder">
               <img src="../../../../src/images/jindu.png"><span class="workInfo_content_title">流程进度</span>
             </div>
             <div class="rocket">
               <div v-for="(item,index) in 13" :key="index">
                 <div :class="'rocket_style' +  index " v-if="item == number">
-                  <img class="s_workIfo_img" src="../../../../src/images/rocket.jpg">
+                  <!-- <img class="s_workIfo_img" src="../../../../src/images/rocket.jpg"> -->
+                  <img class="s_workIfo_img" :src="require('../../../../src/images/rocket.jpg')">
                 </div>
               </div>
             </div>
@@ -130,40 +127,99 @@
 
         <!-- 客服团队 -->
           <div class="implement">
-            <div class="first_style_title">
+            <div class="first_style_titleH1">
               <img src="../../../../src/images/renyuan.png"><span class="workInfo_content_title">客服团队</span>
                 <div class='right_title_btn'>
                   <!-- <el-button  size="small" type="primary" @click='executorChange4f()'>跟进</el-button> -->
-                  <el-button  size="small" type="primary" v-show='executorData_btn.serviec_change_record_btn' @click='serviec_change_record_btn()'>转单记录</el-button>
-                  <el-button  size="small" type="primary" v-show='executorData_btn.change_ae_btn' @click='change_ae_btn()'>更换客服</el-button>
+                  <el-button plain size="small" type="primary" v-show='executorData_btn.serviec_change_record_btn' @click='serviec_change_record_btn'>转单记录</el-button>
+                  <el-button plain size="small" type="primary" v-show='executorData_btn.change_ae_btn' @click='change_ae_btn()'>更换客服</el-button>
                 </div>
             </div>
-            <el-table :data="executorData" border style="width: 96%;" class='executorDataTable'>
+
+            <el-table :data="executorData" border v-if='executorDataleading == null'>
               <el-table-column prop="service_leading" label="客服负责人"></el-table-column>
               <el-table-column prop="ae" label="客服"></el-table-column>
               <el-table-column prop="position" label="职位"></el-table-column>
               <el-table-column prop="department" label="部门"></el-table-column>
               <el-table-column prop="service_remark" label="备注"></el-table-column>
+              <el-table-column prop="service_remark" label="操作">
+                <template slot-scope="scope" v-if='editNum == 1'>
+                  <el-button @click="handleClickPeople(scope.row)" type="text" size="small">更改</el-button>
+                </template>
+              </el-table-column>
             </el-table>
+
+             <table class='tablePeople' cellpadding='0' cellspacing="0" v-else>
+                <tr class='ExecutionDetailP1'>
+                  <th cellpadding='0' cellspacing="0">客服负责人</th>
+                  <th cellpadding='0' cellspacing="0">客服</th>
+                  <th cellpadding='0'>职位</th>
+                  <th cellpadding='0'>部门</th>
+                  <th cellpadding='0'>备注</th>            
+                </tr>
+                <tr class='ExecutionDetailP'>
+                  <td colspan="5">暂无数据</td>
+                </tr>
+             </table>
           </div>
 
-           <div class="Execution_detail" v-for="(item,index) in Execution_detail_list" :key='index'>
+           <!-- <div class="Execution_detail" v-for="(item,index) in Execution_detail_list" :key='index'> -->
+             <div>
               <div class="first_style_title2">
-                <span class="workInfo_content_title workInfo_content_title2">执行明细{{item.number}}</span>
-                  <div class='right_title_btn'>
-                    <el-button  size="small" type="primary" v-show='item.excutor_change_record_btn' @click='executorChange(item.id)'>转单记录</el-button>
-                    <el-button  size="small" type="primary" v-show='item.change_excutor_btn' @click='executorChange2f(item.id)'>更换执行</el-button>
-                    <el-button  class= 'bgBtn' size="small" type="primary" v-show='item.split_btn' @click="executorChange3f(item.number,item.id)">拆分</el-button>
-                    <el-button  class= 'bgBtn' size="small" type="primary" v-show='item.follow_btn' @click='executorChange4f(item.number,item.id)'>跟进</el-button>
-                  </div>
+                <span class="workInfo_content_title workInfo_content_title2">执行明细</span>
+                  <!-- <div class='right_title_btn'>
+                    <el-button plain size="small" type="primary" v-show='item.excutor_change_record_btn' @click='executorChange(item.id)'>转单记录</el-button>
+                    <el-button plain size="small" type="primary" v-show='item.change_excutor_btn' @click='executorChange2f(item.id)'>更换执行</el-button>
+                    <el-button plain class= 'bgBtn' size="small" type="primary" v-show='item.split_btn' @click="executorChange3f(item.number,item.id)">拆分</el-button>
+                    <el-button plain class= 'bgBtn' size="small" type="primary"  v-show='item.follow_btn' @click='executorChange4f(item.number,item.id,item.log_status)'>跟进</el-button>
+                  </div> -->
               </div>
 
-              <table cellspacing="0" cellpadding="0" class='Execution_detail_table'>
+              <el-table :data="Execution_detail_list" v-if='executorDataleading != null'>
+                <el-table-column prop="number" label="编号"></el-table-column>
+                <el-table-column prop="service_leading" label="客服负责人"></el-table-column>
+                <el-table-column prop="pro_info" label="产品"></el-table-column>
+                <el-table-column prop="product_brief" label="产品说明"></el-table-column>
+                <el-table-column prop="log_status_str" label="进度"></el-table-column>
+                <el-table-column prop="price" label="价格"></el-table-column>
+                <el-table-column prop="service_type" label="执行团队"></el-table-column>
+                <el-table-column prop="service_leading" label="负责人"></el-table-column>
+                <el-table-column prop="excutor" label="执行人"></el-table-column>
+                <el-table-column prop="begin_time" label="初稿时间"></el-table-column>
+                <el-table-column prop="confirm_time" label="定稿时间"></el-table-column>
+                <el-table-column prop="mod_count" label="修改次数"></el-table-column>
+                <el-table-column prop="refund_time" label="退款时间"></el-table-column>
+                <el-table-column prop="refund_money" label="退款金额"></el-table-column>
+                <el-table-column prop="service_remark" label="操作"></el-table-column>
+              </el-table>
+
+              <!-- <table cellspacing="0" cellpadding="0" class='Execution_detail_table' v-if='item.type == 1'>
                 <tr class='Execution_detail_table_tr'>
                   <th>产品信息</th>
                   <th>产品说明</th>
                   <th>价格</th>
                   <th>执行团队</th>
+                  <th>执行负责人</th>
+                  <th>执行人</th>
+                  <th>执行进度</th>              
+                </tr>
+                <tr class='Execution_detail_table_tr2'>
+                  <td>{{item.pro_info}}</td>
+                  <td>{{item.product_brief}}</td>
+                  <td>{{item.price}}</td>
+                  <td>{{item.service_type}}</td>
+                  <td>{{item.excutor_leading}}</td>
+                  <td>{{item.excutor}}</td>
+                  <td>{{item.log_status_str}}</td>                
+                </tr>
+              </table>
+
+               <table cellspacing="0" cellpadding="0" class='Execution_detail_table' v-if='item.type == 2'>
+                <tr class='Execution_detail_table_tr'>
+                  <th>产品信息</th>
+                  <th>产品说明</th>
+                  <th>价格</th>
+                  <th>服务商团队</th>
                   <th>服务商负责人</th>
                   <th>服务商</th>
                   <th>执行进度</th>              
@@ -174,8 +230,27 @@
                   <td>{{item.price}}</td>
                   <td>{{item.service_type}}</td>
                   <td>{{item.excutor_leading}}</td>
+                  <td>{{item.service_excutor}}</td>
+                  <td>{{item.log_status_str}}</td>                
+                </tr>
+              </table>
+
+               <table cellspacing="0" cellpadding="0" class='Execution_detail_table' v-if='item.type == 3'>
+                <tr class='Execution_detail_table_tr'>
+                  <th>产品信息</th>
+                  <th>产品说明</th>
+                  <th>价格</th>
+                  <th>执行人</th>
+                  <th>服务商</th>
+                  <th>执行进度</th>              
+                </tr>
+                <tr class='Execution_detail_table_tr2'>
+                   <td>{{item.pro_info}}</td>
+                  <td>{{item.product_brief}}</td>
+                  <td>{{item.price}}</td>
                   <td>{{item.excutor}}</td>
-                  <td>{{item.log_status}}</td>                
+                  <td>{{item.service_excutor}}</td>
+                  <td>{{item.log_status_str}}</td>               
                 </tr>
               </table>
 
@@ -196,20 +271,19 @@
                   <td>{{item.refund_money}}</td>
                   <td>{{item.log_count}}</td>
                 </tr>
-              </table>
+              </table> -->
           </div>
+         
 
            <!-- brief明细 -->
           <div class="implement">
-            <div class="first_style_title">
+            <div class="first_style_title first_style_titleBorder">
               <span class="workInfo_content_title">brief明细</span>
-              <el-button plain  size="small" type="primary" class="addMission" @click="addTask">新增任务</el-button>
+              <el-button plain  size="small" type="primary" v-if = 'number != 2' class="addMission" @click="addTask">新增任务</el-button>
             </div>
-            <el-table :data="breifDetail" border style="width: 96%;" class='executorDataTable'>
+            <el-table :data="breifDetail" border>
               <el-table-column prop="task_number" label="brief编号"></el-table-column>
-
               <el-table-column prop="type_title" label="brief类型"></el-table-column>
-
               <el-table-column prop="title" label="brief标题"></el-table-column>
               <el-table-column prop="man" label="执行人"></el-table-column>
               <el-table-column prop="status_title" label="状态"></el-table-column>
@@ -262,20 +336,7 @@
           </el-card>
         </el-tab-pane>
 
-        <el-tab-pane label="操作记录" name="third">
-          <el-card class="box-card">
-            <div slot="header" class="clearfix">
-              <span>操作日志</span>
-            </div>
-            <el-table :data="operateLog">
-              <el-table-column prop="nickname" label="人员" width="150"></el-table-column>
-              <el-table-column prop="content" label="操作内容"></el-table-column>
-              <el-table-column prop="create_time" label="操作时间"></el-table-column>
-            </el-table>
-          </el-card>
-        </el-tab-pane>
-
-        <el-tab-pane label="工单记录" name="fivth">
+        <el-tab-pane label="派单记录" name="fivth">
           <el-card class="box-card">
             <div slot="header" class="clearfix">
               <span>操作日志</span>
@@ -293,7 +354,7 @@
           <el-card class="box-card">
             <div slot="header" class="clearfix">
               <span class='earlyWarning'>执行预警</span>
-              <el-button @click='addEarlyWarning'>新增预警</el-button>
+              <el-button type="primary" round  size="small" plain @click='addEarlyWarning'>新增预警</el-button>
             </div>
             <el-table ref="multipleTable" :data="warnListData" tooltip-effect="dark" style="width: 100%"  class='multipleTableColor3' align="center">
                  
@@ -339,6 +400,19 @@
           </el-card>
         </el-tab-pane>
 
+        <el-tab-pane label="日志" name="third">
+          <el-card class="box-card">
+            <div slot="header" class="clearfix">
+              <span>操作日志</span>
+            </div>
+            <el-table :data="operateLog">
+              <el-table-column prop="nickname" label="人员" width="150"></el-table-column>
+              <el-table-column prop="content" label="操作内容"></el-table-column>
+              <el-table-column prop="create_time" label="操作时间"></el-table-column>
+            </el-table>
+          </el-card>
+        </el-tab-pane>
+
       </el-tabs>
     </div>
 
@@ -359,6 +433,7 @@
                         class='paginationNum'
                         background
                         :current-page.sync="paginationNum.current_page"
+                        @current-change="handleCurrentChange"
                         :page-sizes="[10, 20, 50, 100]"
                         :page-size="paginationNum.per_page"
                         layout="prev, pager, next"
@@ -389,11 +464,12 @@
                 <el-pagination
                         class='paginationNum'
                         background
-                        :current-page.sync="paginationNum.current_page"
+                        :current-page.sync="paginationNum2.current_page"
                         :page-sizes="[10, 20, 50, 100]"
-                        :page-size="paginationNum.per_page"
+                        :page-size="paginationNum2.per_page"
                         layout="prev, pager, next"
-                        :total="paginationNum.total">
+                        @current-change="handleCurrentChange2"
+                        :total="paginationNum2.total">
                 </el-pagination>
             </div>
         </el-card>
@@ -450,6 +526,9 @@
                   :label="item.number"
                   :value="item.id"
                   >
+              <span style="float: left">{{ item.number }}</span>
+              <!-- <span style="margin-left:15px">{{ item.product_brief }}</span> -->
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.product }}</span>
               </el-option>
           </el-select>
         </el-form-item>
@@ -525,17 +604,18 @@
                 <el-pagination
                         class='paginationNum'
                         background
-                        :current-page.sync="paginationNum.current_page"
+                        :current-page.sync="paginationNum3.current_page"
                         :page-sizes="[10, 20, 50, 100]"
-                        :page-size="paginationNum.per_page"
+                        :page-size="paginationNum3.per_page"
                         layout="prev, pager, next"
-                        :total="paginationNum.total">
+                        @current-change="handleCurrentChange3"
+                        :total="paginationNum3.total">
                 </el-pagination>
             </div>
         </el-card>
       </el-dialog>
 
-<!-- 更换执行团队 -->
+      <!-- 更换执行团队 -->
           <el-dialog  :visible.sync="executorChange2"  title="更换执行团队" :modal="false" width="40%">
             <div class='CustomerLeaderAllbox'>
             <el-form label-position="right" label-width="140px" :model="changeExecutor"  :rules="rules" ref="changeExecutor">
@@ -608,7 +688,6 @@
                       </el-select>
                   </el-form-item>
 
-
                   <el-form-item label="执行人 :" class='is-required'  prop="textName3">                     
                     <el-select multiple value-key='dd_id' class="inputWarn" placeholder="可选择一位执行人" v-model="changeExecutor.excutor_id" filterable>
                         <el-option
@@ -662,7 +741,7 @@
 
                   <el-form-item label="执行方 :" class='is-required'  :prop="'excutor_detail.' + index + '.service_type'">
                     <!-- <el-radio-group v-model="item.service_type" :key="index"> -->
-                      <el-radio  v-model="item.service_type" label=1>自营团队</el-radio>
+                      <el-radio  v-model="item.service_type" label=1 @change='radioChange'>自营团队</el-radio>
                       <el-radio  v-model="item.service_type" label=2>服务商团队</el-radio>
                     <!-- </el-radio-group> -->
                   </el-form-item>
@@ -681,17 +760,20 @@
                         </el-select>
                     </el-form-item>
 
-                     <el-form-item label="执行人 :" class='is-required'
-					            :rules="[{ required: true, message: '请选择至少一位执行人',trigger:'blur'}]"                   
-                      :prop="'excutor_detail[' + index + '].excutor_id'">                     
-                    <el-select class="inputWarn" 
+<!-- v-for="(domain, index) in item.excutor_detail.excutor_id"
+                  :key="index" -->
+                  <el-form-item label="执行人:" class='is-required'
+                    :prop="'excutor_detail[' + index + '].excutor_id'"
+                    :rules="[{ required: true, message: '请选择一位执行人',trigger:'blur'}]"
+                    > 
+                      <!-- v-if="typeof item.excutor_id == object"   multiple -->
+                      <!-- :multiple = 'itemType == 1'  v-if="person.length> 0" -->
+                      <!-- v-if = 'item.excutor_id instanceof Array' -->
+                    <el-select class="inputWarn"
                       value-key="dd_id" 
-                      v-if="person.length> 0" 
-                      placeholder="可选择多个执行人" 
-                      v-model="item.excutor_id" 
-                      multiple 
+                      placeholder="可选择一个执行人" 
+                      v-model="item.excutor_id"
                       filterable >
-                      
                         <el-option
                           v-for="item in person"
                           :key="item.dd_id"
@@ -700,6 +782,7 @@
                         </el-option>									
                       </el-select>
                   </el-form-item>
+                  <!-- <el-button @click="addDomain">新增一个执行人</el-button> -->
                 </div>
 
                 <div v-if = "item.service_type == 2">
@@ -788,7 +871,7 @@
         </el-dialog>
 
 <!-- 执行情况跟进 -->
-    <el-dialog  :visible.sync="executorChange4" title="执行情况跟进" :modal="false" width="40%" class='executiveLogging3'>
+    <el-dialog  :visible.sync="executorChange4" title="执行情况跟进" :modal="false" width="500px" class='executiveLogging3'>
       <p class='CustomerLeaderOne2'>执行明细{{genjinNum}}</p>
       <div class="dialogSolid2"></div>
       <el-form :model="replaceform" label-width="100px" class='executiveLogging3Top' ref='replaceform' :rules="rules">
@@ -861,9 +944,47 @@
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button @click="workInReplace = false">取 消</el-button>
+        <el-button @click="executorChange4 = false">取 消</el-button>
         <el-button type="primary" @click.prevent="followUpBtn('replaceform')">确 定</el-button>
       </div>
+    </el-dialog>
+
+<!-- 更改客服团队 -->
+		<!-- <el-dialog  :visible.sync="changePeopleAe" :modal="false" @close='cancel' :title="dialogValChildTitle" width="550px" @open='whenOpen'> -->
+		<el-dialog  :visible.sync="changePeopleAe" :modal="false" title="更改" width="550px"  @open='whenOpen'>
+      <el-form label-position='right' label-width="100px"  :model="r_dataPeople" ref="r_dataPeople">									
+					<el-form-item label="负责人 :" class='is-required'>
+						<el-select  
+							placeholder="请选择"
+							v-model="r_dataPeople.service_leading" 
+							filterable 
+							clearable
+							class='elText'
+							>
+							<el-option
+								v-for="item in AeBossPeople"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value">
+							</el-option>
+						</el-select>
+					</el-form-item>
+
+					<el-form-item label="备注 :">
+						<el-input    
+							placeholder="请输入"              
+							type="textarea"
+							class='elText'
+							:rows="5"
+							v-model="r_dataPeople.remarks" 
+							>
+						</el-input>
+					</el-form-item>
+				</el-form> 
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="changePeopleAe = false">取 消</el-button>
+          <el-button type="primary" @click="changePeopleAeFc">确 定</el-button>
+			</span>
     </el-dialog>
 
 <!-- 驳回 --> 
@@ -1193,7 +1314,8 @@
       </div>
     </el-dialog>
      -->
-    <allDialog @dialogall='dialogall' :dialogValChildTitle='dialogAllTitle,dialogAll1,dialogId,menuId5'></allDialog>
+    <allDialog @dialogall='dialogall' :dialogValChildTitle='dialogAllTitle,dialogAll1,dialogId,menuId5,message,annexData'></allDialog>
+    <beforeAllDialog @beforedialogall='beforedialogall' :dialogValChildTitle2='beforeDialogAllTitle,beforeDialogAll1'></beforeAllDialog>
 
   </div>
 </template>
@@ -1202,15 +1324,20 @@
 import annexList from "../.././components/s_customer/annexList";
 import Cookies from "js-cookie";
 import allDialog from "./allDialog";
+import beforeAllDialog from "./beforeAllDialog";
+
 
 export default {
   components: {
     annexList,
-    allDialog
+    allDialog,
+    beforeAllDialog
   },
 
   data() {
     return {
+      editNum:0,
+      changePeopleAe:false,
       val:[],
       handleWarningId:0,
       eyeId:0,
@@ -1245,6 +1372,7 @@ export default {
           //   { required: true, message: '请选择一个执行负责人', trigger: 'blur' }
           // ]
       },
+      itemType:2,
       zhixingNum:0,
       product:[],
       CustomerBudinessMan:[],
@@ -1261,6 +1389,9 @@ export default {
       detail_ids:0,
       dialogId:0,
       paginationNum:{},
+      isContent:0,
+      paginationNum2:{},
+      paginationNum3:{},      
       changeRecord:[],
       changeRecord2data:[],
       executorChangeBialog:false,
@@ -1274,6 +1405,7 @@ export default {
       executiveLoggingEye:false,
       executiveLogging2:false,
       executorData: [],
+      executorDataleading:'',
       executorData_btn:{},
       Execution_detail_list: [],
 
@@ -1303,6 +1435,8 @@ export default {
       centerDialogVisible: false, // 派单loading框
       centerDialogEnd: false,
       dialogAll1: false,
+      beforeDialogAll1:false,
+      beforeDialogAllTitle:'',
       dialogAllTitle: "",
       workInCancelForm: false,
       workInReplace: false,
@@ -1388,7 +1522,7 @@ export default {
       r_dataFrom:{
            manage_id:0,
            detail_id:0,
-        excutor_detail:[
+          excutor_detail:[
           { 
             service_type:'1',
             excutor_leading:'',
@@ -1449,6 +1583,12 @@ export default {
       size: "",
       success: false,
       updata: false,
+      AeBossPeople:[],
+      r_dataPeople:{
+        manage_id:0,
+        service_leading:'',
+        remarks:''
+      },
       // person: [],
       company: {
         company_id: "",
@@ -1466,6 +1606,87 @@ export default {
     }
   },
   methods: {
+    whenOpen(){
+        this.$get('manageNew/serviceLeading')
+          .then((data) => {
+            console.log(data.content)
+            this.AeBossPeople = data.content;
+          })
+          .catch((data) => {
+            this.$message.error('服务器错误，请稍后重试');
+		});
+    },
+    changePeopleAeFc(){
+      // 更改提交
+      if (!this.r_dataPeople.service_leading) {
+          this.$message({
+            message: '请选择负责人',
+            type: 'warning'
+          })
+        }else{
+          console.log(this.r_dataPeople)
+          this.$post("manageNew/editServiceLeading", this.r_dataPeople)
+          .then(data => {
+            console.log(data)
+            if (data.code) {
+              this.$message({
+                message: '更改成功!',
+                type: "success"
+              });
+              // this.$router.push({ name: "workInfoNew" });
+              this.$router.go(0)
+              this.$store.commit("removeTag", "workInfo");
+              this.$store.commit("closePage", "workInfo");
+              this.changePeopleAe = false;
+              this.r_dataPeople = {};
+              this.workOperateLog();
+            } else {
+              this.$message({
+                message: data.errorMsg,
+                type: "warning"
+              });
+            }
+          })
+          .catch(() => {
+            this.$message.error("服务器错误，请稍后重试..");
+          });
+        }
+    },
+    handleClickPeople(val){
+      console.log(val)
+      this.changePeopleAe = true;
+    },
+    handleCurrentChange(val){
+      if(this.isContent==1){
+        this.changeContent(true,val)
+      }else{
+        this.executiveLeyeOpen(this.eyeId,val)
+      }
+    },
+    handleCurrentChange2(val){
+      this.serviec_change_record_btn(val);
+    },
+      handleCurrentChange3(val){
+      this.executorChange(this.executorChangeNum,val);
+    },
+      addDomain() {
+        this.r_dataFrom.excutor_detail.excutor_id.push(
+          { 
+            service_type:'1',
+            excutor_leading:'',
+            excutor_id:[],
+            product_id:[],
+            product_brief:'',
+            price:'',
+            key: Date.now()
+          });
+      },
+    radioChange(){
+      setTimeout(()=>{
+          this.itemType = 1
+        })
+      // this.$forceUpdate();
+    },
     // dingding(){
 
     //   console.log(this.val)
@@ -1526,35 +1747,35 @@ export default {
     },
     // 执行拆分
     executeSplit(r_dataFrom){
-      this.$refs[r_dataFrom].validate((valid) => {
-				if (valid) {
-					this.$post("manageNew/splitExecute", this.r_dataFrom)
-						.then(data => {
-							if (data.code) {
-								this.$message({
-									message: '拆分成功！',
-									type: "success"
-								});
-								this.r_data = {};
-								// this.$router.push({ name: "workInfoNew" });
-								this.$router.go(0)
-								this.$store.commit("removeTag", "workInfo");
-								this.$store.commit("closePage", "workInfo");
-								this.workOperateLog();
-							} else {
-								this.$message({
-									message: data.errorMsg,
-									type: "warning"
-								});
-							}
-						})
-						.catch(() => {
-							this.$message.error("服务器错误，请稍后重试..");
-						});
-				} else {
-					return false;
-				}
-			});						
+      // this.$refs[r_dataFrom].validate((valid) => {
+			// 	if (valid) {
+			// 		this.$post("manageNew/splitExecute", this.r_dataFrom)
+			// 			.then(data => {
+			// 				if (data.code) {
+			// 					this.$message({
+			// 						message: '拆分成功！',
+			// 						type: "success"
+			// 					});
+			// 					this.r_data = {};
+			// 					// this.$router.push({ name: "workInfoNew" });
+			// 					this.$router.go(0)
+			// 					this.$store.commit("removeTag", "workInfo");
+			// 					this.$store.commit("closePage", "workInfo");
+			// 					this.workOperateLog();
+			// 				} else {
+			// 					this.$message({
+			// 						message: data.errorMsg,
+			// 						type: "warning"
+			// 					});
+			// 				}
+			// 			})
+			// 			.catch(() => {
+			// 				this.$message.error("服务器错误，请稍后重试..");
+			// 			});
+			// 	} else {
+			// 		return false;
+			// 	}
+			// });						
     },
     	//选项 产品列表
       addItem(){
@@ -1622,22 +1843,21 @@ export default {
             });
         }
     },
-    changeContent(val){
-
-        var isContent;
+    changeContent(val,val2){
         if (val) {
-          isContent = 1;
+          this.isContent = 1;
         }else{
-          isContent = 0;
+          this.isContent = 0;
         }
        this.$get( 'manageNew/exctuorOperaLog', {
             manage_id: this.manage_id,
             detail_id:this.eyeId,
-            is_content:isContent
+            is_content:this.isContent,
+            page:val2
           })
           .then((data) => {
              this.eyeChangeRecord = data.content.data; 
-              this.paginationNum = data.content;
+             this.paginationNum = data.content;
           })
           .catch(() => {
             this.$message.error('服务器错误，请稍后重试');
@@ -1664,7 +1884,6 @@ export default {
             manage_id: this.manage_id,
           })
           .then((data) => {
-            console.log(data)
              this.excuteListData = data.content; 
               // this.paginationNum = data.content;
           })
@@ -1685,18 +1904,21 @@ export default {
       this.followUPNum = val;
     },
     // 执行转单记录 上面的四个按钮  1.转单记录 2.更换执行
-    executorChange(num){
-      this.executorFour = true;
+    executorChange(num,currentPage){
+      this.executorChangeNum = num;
       this.$get( 'manageNew/changeRecord', {
-        manage_id: this.$route.query.manage_id,
-        detail_id: num
+        manage_id: this.manage_id,
+        detail_id: this.executorChangeNum,
+        page:currentPage
       })
         .then((data) => {
           this.changeRecord2data = data.content.data;
+          this.paginationNum3 = data.content;
         })
         .catch(() => {
           this.$message.error('服务器错误，请稍后重试');
         })
+      this.executorFour = true;
       
     },
     executorChange2f(id){
@@ -1738,10 +1960,13 @@ export default {
       this.executorChange3 = true;
       this.addItem()
     },
-    executorChange4f(num,id){
+    executorChange4f(num,id,status){
       this.executorChange4 = true;
       this.genjinNum = num;
       this.replaceform.detail_id = id;
+      if(status!==0){
+        this.replaceform.status = status;
+      }
 
       this.$get( 'manageNew/getFollowUpStatus')
           .then((data) => {
@@ -1752,11 +1977,12 @@ export default {
           })
     },
     //  执行记录
-    executiveLeyeOpen(id){
+    executiveLeyeOpen(id,currentPage){
       this.eyeId = id;
         this.$get( 'manageNew/exctuorOperaLog', {
             manage_id: this.manage_id,
-            detail_id:id
+            detail_id:id,
+            page:currentPage
           })
           .then((data) => {
              this.eyeChangeRecord = data.content.data; 
@@ -1768,13 +1994,14 @@ export default {
           this.executiveLoggingEye = true;
     },
      // 客服转单记录
-    serviec_change_record_btn(val){
+    serviec_change_record_btn(currentPage){
       this.$get( 'manageNew/serviceChangeRecord', {
         manage_id: this.manage_id,
+        page:currentPage
       })
           .then((data) => {
               this.changeRecord = data.content.data;
-              this.paginationNum = data.content;
+              this.paginationNum2 = data.content;
           })
           .catch(() => {
             this.$message.error('服务器错误，请稍后重试');
@@ -1787,6 +2014,9 @@ export default {
     },
     dialogall(bool){
       this.dialogAll1 = bool;
+    },
+    beforedialogall(bool){
+      this.beforeDialogAll1 = bool;
     },
      changeHandler(value) {
             this.CustomerRadios = !this.CustomerRadios;
@@ -1810,17 +2040,25 @@ export default {
       },
     // 工单共用事件
     workAll(itemId, itemVale) {
-
-      if (itemVale == "确认"){
-        this.dialogAllTitle = "首付款确认";
-      } else {
-        this.dialogAllTitle = itemVale;
-        this.r_data.first_pay = '';
-      }
-        this.dialogAll1 = true;
+      console.log(itemId, itemVale)
+      if(this.task_type == 1){
+        this.beforeDialogAllTitle = itemVale;
+        this.beforeDialogAll1 = true;
         this.r_data.btn_no = itemId;
-
         this.dialogId = itemId;
+      }else if(this.task_type == 2){
+        console.log('这是成单执行')
+          if (itemVale == "确认"){
+          this.dialogAllTitle = "首付款确认";
+        } else {
+          this.dialogAllTitle = itemVale;
+          this.r_data.first_pay = '';
+        }
+          this.dialogAll1 = true;
+          this.r_data.btn_no = itemId;
+          this.dialogId = itemId;
+      }
+     
     },
 
     handleCompany(val) {
@@ -1868,15 +2106,12 @@ export default {
          // 新增预警
       this.$post("manageNew/addWarning", this.replaceform)
         .then(data => {
-
             this.$message({
               message: "新增预警成功！",
               type: "success"
             });
 
           if (data.code) {
-
-           console.log(data)
             this.warningDialog = false;
             this.replaceform = {};
             this.workData();
@@ -1890,9 +2125,6 @@ export default {
           this.$message.error("服务器错误，请稍后重试");
         });
       }else if(messageData == '关闭预警'){
-        console.log(1)
-        console.log(this.replaceform)
-
       this.$post("manageNew/closeWarning", this.replaceform)
         .then(data => {
           if (data.code) {
@@ -1940,13 +2172,14 @@ export default {
       this.$post("manageNew/changeAe", this.replaceform)
         .then(data => {
           if (data.code) {
-            this.workInReplace = false;
-            this.replaceform = {};
-            this.workData();
             this.$message({
               message: data.errorMsg,
               type: "success"
             });
+
+            this.workInReplace = false;
+            this.replaceform = {};
+            this.workData();
             this.$router.go(0)
             this.workOperateLog();
           } else {
@@ -2130,29 +2363,26 @@ export default {
       this.$get("manageNew/orderDetail", this.$route.query)
         .then(data => {
           if (data.code) {
-            console.log(data.content)
             this.r_data.description = data.content.message.description;
             this.message = data.content.message;
             this.menu = data.content.input;
-
             for (let index = 0; index < this.menu.length; index++) {
               if(this.menu[index].id == 5 ){
                 this.menuId5 = true;
               }
-              
             }
+            
             this.warn_count =  data.content.warn_count? '('+data.content.warn_count+')':'';
-
             this.input_content = data.content.input.input_content;
             this.process = data.content.process;
             this.number = data.content.message.status;
             this.number2 = data.content.message.status;
-
+            this.executorDataleading = data.content.service.service_leading;
             this.executorData.push(data.content.service);
             this.executorData_btn = data.content.service.btn;
-
+            this.editNum = data.content.service.edit;
             this.Execution_detail_list = data.content.executor;
-          
+            
             this.add_brife = data.content.add_brife;
             this.add_excutor = data.content.add_excutor;
             this.client_id = data.content.message.client_id;
@@ -2193,7 +2423,6 @@ export default {
     this.$get("manageNew/warnList", this.$route.query)
         .then(data => {
           if (data.code) {
-            console.log(data.content)
             this.warnListData = data.content.list
           } else {
             this.$message({
@@ -2209,7 +2438,6 @@ export default {
         // this.$get('task/list')
         // .then(data => {
         //   if (data.code) {
-        //     console.log(data)
         //     this.briefList = data.content.detail;
         //   } else {
         //     this.$message({
@@ -2223,7 +2451,6 @@ export default {
         // }); 
         this.$get("task/breifDetail", { manage_id: this.manage_id })
         .then(data => {
-          console.log(data)
           this.breifDetail = data.content.detail;
           this.first_count = data.content.first_count;
           this.second_count = data.content.second_count;
@@ -2286,6 +2513,7 @@ export default {
           });
         });
     },
+   
     // 附件页
     fileListAll() {
       this.$get("manage/manageAttachment", {
@@ -2337,11 +2565,9 @@ export default {
     },
     // 
     workOperateLog2(tab,event) {
-      console.log(tab.label)
-      console.log(this.manage_id)
-
-      if(tab.label == '工单记录'){
+      if(tab.label == '派单记录'){
          this.$get("manageNew/manageStatusLog", {
+        //  this.$get("manageNew/manageOperateLog", {
           manage_id: this.manage_id
       })
         .then(data => {
@@ -2359,7 +2585,7 @@ export default {
     },
     // 操作日志
     workOperateLog() {
-      this.$get("manage/manageOperateLog", {
+      this.$get("manageNew/manageOperateLog", {
         manage_id: this.$route.query.manage_id
       })
         .then(data => {
@@ -2373,10 +2599,18 @@ export default {
         });
     }
   },
+  //  watch:{
+  //     itemType(){
+  //       setTimeout(()=>{
+  //         this.itemType = 1
+  //       })
+  //     }
+  //   },
   created() {
     // 派单需要的步骤数等三个传过来的参数   changeExecutor
     this.r_data.manage_id = this.$route.query.manage_id;
     this.r_form.manage_id = this.$route.query.manage_id;
+    this.r_dataPeople.manage_id = this.$route.query.manage_id;
 
     this.r_dataFrom.manage_id = this.$route.query.manage_id;
     this.changeExecutor.manage_id = this.$route.query.manage_id;
@@ -2411,7 +2645,7 @@ export default {
 };
 </script>
 
-<style lang="less">
+<style lang="less" type="scoped">
 .workInfo {
   .s_workinfo_step_0,
   .s_workinfo_step_1,
@@ -2646,13 +2880,14 @@ export default {
     float: right;
     width: 33%;
     height: 80%;
+    display: flex;
+    justify-content:center;
   }
   .workDetailsButtonFather {
     float: left !important;
   }
   .workDetailsButton {
     float: right;
-    margin-left: 25px;
     width: 100px;
     height: 44px;
     font-size: 16px;
@@ -2664,27 +2899,17 @@ export default {
  
   @media screen and (max-width: 1430px) {
     .workDetailsButton {
-      margin-left: 20px;
       width: 80px;
       height: 35.2px;
       font-size: 14px;
-      margin-top: 15%;
-      border-radius: 10px;
-      text-align: center;
-      padding: 0px;
     }
   }
 
    @media screen and (max-width: 1200px) {
     .workDetailsButton {
-      margin-left: 20px;
       width: 60px;
       height: 35.2px;
       font-size: 14px;
-      margin-top: 15%;
-      border-radius: 10px;
-      text-align: center;
-      padding: 0px;
     }
   }
   .workDetailsBottom {
@@ -2736,7 +2961,7 @@ export default {
     left: 22px;
   }
   .workInfo_content_title2{
-    left: 0;
+    left: 44px;
   }
   .progress_bar {
     background-color: #ffffff;
@@ -2755,13 +2980,22 @@ export default {
     overflow: hidden;
     margin-right: 0;
   }
+  .first_style_titleH1{
+    padding-top: 10px;
+    font-weight: 600;
+    width: 96%;
+    margin-left: 2%;
+    height: 48px;
+    line-height: 50px;
+    position: relative;
+    overflow: hidden;
+    margin-right: 0;
+  }
 
 .first_style_title2 {
     padding-top: 10px;
     font-weight: 600;
     width: 100%;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 2%;
     height: 48px;
     line-height: 50px;
     position: relative;
@@ -2914,12 +3148,6 @@ export default {
 .moreName{
   color: #8d8d8d;
 }
-.el-date-editor{
-  width: 250px !important;
-}
-// .el-select{
-//   width: 260px !important;
-// }
 .Executive_self_support{
   padding: 0 78px 20px;
 }
@@ -2928,14 +3156,11 @@ export default {
   top: 0;
   right: 0;
 }
-.executorDataTable{
-  margin-left: 20px;
-}
+
 .Execution_detail{
   background: #fff;
   margin: 10px 0;
   width: 100%;
-  padding: 10px 20px;
 }
 .Execution_detail_table{
   width: 100%;
@@ -2950,6 +3175,13 @@ export default {
   background: #fafafa;
   border: 1px solid #ebebeb;
   border-radius: 5px;
+  font-size:14px;
+  color:#909399;
+}
+
+.Execution_detail_table_tr2 td{
+  font-size:14px;
+  color:#606266;
 }
 
 .Execution_detail_table_tr th,.Execution_detail_table_tr2 td{
@@ -3028,5 +3260,84 @@ export default {
 }
 .bgBtn{
   padding: 10px 30px !important;
+}
+.workDetailsButtonOver{
+  background-color: #f11d4e;
+  border-color: #f11d4e;
+}
+.workDetailsButtonOver:hover{
+  background-color: #f11d4e;
+  border-color: #f11d4e;
+}
+.noData{
+  text-align: center;
+  font-size: 15px;
+  color: #909399;
+}
+
+.workOperateLog22 .el-tabs__nav-wrap{
+  // border-bottom: 2px solid #eef2f9;
+}
+
+.first_style_titleBorder{
+  border-bottom: 1px solid #f0f0f0;
+}
+.ExecutionDetailP{
+  width:100%;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  font-size: 14px;
+  color: #909399;
+}
+.tablePeople{
+  width:100%;
+  border-collapse: collapse;
+}
+
+.tablePeople2{
+  width:100%;
+  border-collapse: collapse;
+}
+
+.tablePeople2 .ExecutionDetailP2{
+  border:1px solid #ebeef5;
+  // border-left:none;
+  border-right:none;
+}
+
+.tablePeople2 tr th,.tablePeople2 tr td{
+  width:14%;
+  border-right:1px solid #ebeef5;
+  border-collapse: collapse;
+  color:#909399;
+  height: 48px;
+  font-size: 14px;
+  text-align:center;
+}
+
+.tablePeople2 .ExecutionDetailP3 th,.tablePeople2 .ExecutionDetailP3 td{
+   width:141px !important;
+}
+
+.tablePeople2 tr th,.tablePeople2 tr td:last-child{
+  // border-right:none;
+}
+
+.tablePeople .ExecutionDetailP1{
+  border:1px solid #ebeef5;
+  border-left:none;
+  border-right:none;
+}
+.tablePeople tr th{
+  width:20%;
+  border-right:1px solid #ebeef5;
+  border-collapse: collapse;
+  color:#909399;
+  height: 48px;
+  font-size: 14px;
+}
+.tablePeople tr th:last-child{
+  border-right:none;
 }
 </style>

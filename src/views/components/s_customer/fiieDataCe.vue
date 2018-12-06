@@ -79,6 +79,7 @@
             doUpload () {
                 const _this = this;
                 _this.$post( 'getSts').then((result) => {
+                    console.log(result)
                     const client = new OSS.Wrapper({
                         region: _this.region,
                         accessKeyId: result.AccessKeyId,

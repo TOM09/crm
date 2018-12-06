@@ -87,14 +87,6 @@ export const otherRouter = {
               require(['@/views/crmManagement/executiveManagement/workInfo.vue'], resolve)
             }
         },
-        {
-            path: 'workInfo',
-            title: '工单详情',
-            name: 'workInfo',
-            component: resolve => {
-                require(['@/views/crmManagement/executiveManagement/workInfo.vue'], resolve)
-            }
-        },
         //  {
         //     path: 'workInfoNew',
         //     title: '工单详情',
@@ -224,8 +216,7 @@ export const appRouter = [
           title: '客户列表',
           name: 'clientList',
           component: resolve => { require(['@/views/crmManagement/customer/clientList.vue'], resolve); }
-        },
-
+        }
       ]
     },
     {
@@ -239,14 +230,14 @@ export const appRouter = [
           path: 'workOrderList',
           icon: '',
           title: '工单列表',
-          name: 'workOrder',
+          name: 'workOrderList',
           component: resolve => { require(['@/views/crmManagement/executiveManagement/workOrderList.vue'], resolve); }
         }
-        
+        // ,
         //  {
         //     path: 'workOrderNew',
         //     icon: '',
-        //     title: '工单列表',
+        //     title: '工单列表(售前调用)',
         //     name: 'workOrderNew',
         //     component: resolve => {
         //         require(['@/views/crmManagement/executiveManagement/workOrderNew.vue'], resolve);

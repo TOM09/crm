@@ -191,8 +191,7 @@
     methods: {
       handleChange() {
         this.searchForm.product = this.searchForm.productList[2];
-        // this.searchForm.step = this.searchForm.task_type[1];
-
+        this.searchForm.step = this.searchForm.task_type[1];
       },
       resetForm (formName) {
         this.searchForm.product = '';
@@ -200,7 +199,6 @@
       },
       // 工单列表查询函数
       Inquire_client (searchForm) {
-        console.log(searchForm,this.page)
         if(this.page == 0){
           this.$emit("searchNewList",searchForm);
         } else if(this.page == 1) {
@@ -209,21 +207,6 @@
           this.$emit("searchNewMyList",searchForm);
         }
       },
-       // 查询条件
-      // remoteMethod () {
-      //   this.$get( 'manageNew/manageList')
-      //     .then( (data) => {
-      //       if(data.code){
-      //         /*this.departmenta = data.content.dept;
-      //         this.person = data.content.person;*/
-      //         this.searchListStep = data.content.step;
-      //         console.log(data.content)
-      //       }
-      //     })
-      //     .catch(() => {
-
-      //     })
-      // },
     },
     computed: {
       persons () {
