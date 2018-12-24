@@ -14,6 +14,18 @@
                     <el-table ref="multipleTable" :data="orderList" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange" align="center">
                         <el-table-column type="selection" width="55"></el-table-column>
                         <el-table-column fixed prop="order_code" label="订单编号"></el-table-column>
+
+                        <el-table-column prop="is_repeat" label="标记"> 
+                            <template slot-scope="scope">
+                                <span class="tableBlue" v-if='scope.row.is_repeat === 2'>
+                                    复购
+                                </span>
+                                <span class="tableBlue" v-if="scope.row.is_repeat == 1">
+                                    新购
+                                </span>
+                            </template>
+                        </el-table-column>
+
                         <el-table-column prop="name" label="订单名称"> </el-table-column>
                         <el-table-column prop="client_name" label="客户名称"></el-table-column>
                          <el-table-column prop="order_nums" align="center" label="客户成单数"></el-table-column>
@@ -251,12 +263,10 @@
         created(){
 
         }
-
-
     }
 </script>
 
-<style lang="less">
+<style lang="less" type='scoped'>
 .orderListData{
   .orderBtn{
       margin-top: 20px;
@@ -267,5 +277,12 @@
       padding: 20px;
       text-align: center
   }
+ .tableBlue{
+    color : #409EFF;
+    border: 1px solid #409EFF;
+    border-radius: 4px;
+    padding: 2px;
 }
+}
+
 </style>

@@ -10,7 +10,7 @@
             <el-card>
                 <span class="demonstration">
                     <el-table :data="workListLoad" ref="multipleTable" tooltip-effect="dark" style="width: 100%;"
-                    @selection-change="handleSelectionChange" :row-class-name="tableRowClassName">
+                    @selection-change="handleSelectionChange">
                         <el-table-column
                             type="selection"
                             width="55">
@@ -109,21 +109,8 @@ export default {
         }
     },
     methods: {
-        tableRowClassName({row, rowIndex}){
-            if (row.is_warn) {
-                return 'warning-row';
-            }
-        // else if (rowIndex === 3) {
-        //         return 'success-row';
-        //     }
-            return '';
-        },
         handleClick(tab) {
-            // if(tab.task_type === 1){
-            //     this.$router.push({name: 'workInfo', query: {manage_id: tab.manage_id, step: tab.step, task_id: tab.id}});
-            // }else{
-                this.$router.push({name: 'workInfo', query: {manage_id: tab.manage_id, work_type: tab.task_type}});
-            // }
+            this.$router.push({name: 'workInfo', query: {manage_id: tab.manage_id, step: tab.step, task_id: tab.id}});
         },
         transfer(tab) {
             this.$router.push({name: 'orderDetail', params: {id: tab.order_id}});
@@ -140,14 +127,13 @@ export default {
         handleCurrentChange(val) {
             this.currentPage4 = val;
             this.pageSizeData();
-            this.$forceUpdate(); 
         },
         pageSizeData () {
             if(this.page === 0) {
                 this.searchData['currentPage'] = this.currentPage4;
                 this.searchData['pageSize'] = this.pageSize;
                 this.searchData['range'] = "pending";
-                this.$get( 'manageNew/manageList',this.searchData)
+                this.$get( 'manage/manageList',this.searchData)
                     .then ( (data) => {
                         this.$emit("workList",data.content.data)
 
@@ -159,7 +145,7 @@ export default {
                 this.searchData['currentPage'] = this.currentPage4;
                 this.searchData['pageSize'] = this.pageSize;
                 this.searchData['range'] = "all";
-                this.$get( 'manageNew/manageList',this.searchData)
+                this.$get( 'manage/manageList',this.searchData)
                     .then ( (data) => {
                         this.$emit("workListAll",data.content.data)
                     })
@@ -170,7 +156,7 @@ export default {
                 this.searchData['currentPage'] = this.currentPage4;
                 this.searchData['pageSize'] = this.pageSize;
                 this.searchData['range'] = "mine";
-                this.$get( 'manageNew/manageList',this.searchData)
+                this.$get( 'manage/manageList',this.searchData)
                     .then ( (data) => {
                         this.$emit("myWorkList",data.content.data)
                     })
@@ -198,7 +184,7 @@ export default {
                 //     type: 'success',
                 //     message: '删除成功!'
                 // });
-                this.$get( 'manageNew/manageDel',{manage_id :rows[index].manage_id})
+                this.$get( 'manage/manageDel',{manage_id :rows[index].manage_id})
                     .then ( (data) => {
                         if(data.code){
                             this.$message({
@@ -224,15 +210,7 @@ export default {
 }
 </script>
 
-<style lang="less"  type="scoped">
- .el-table .warning-row {
-    background: oldlace;
-  }
-
-  .el-table .success-row {
-    background: #f0f9eb;
-  }
-
+<style lang="less">
     .workNewList{
         .export{
             text-align: left;

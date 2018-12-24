@@ -17,7 +17,7 @@
             </el-popover>
           </div>
           <div class="s_details_fuze" :class="{s_fuzeman:fuzeman}">
-            共同负责人1:
+            共同负责人:
             <el-popover trigger="hover" placement="top"  v-for="item in date.partner" :key="item.partner">
               <p> {{item.dept}}{{item.partner}}</p>
               <div slot="reference" class="name-wrapper">
@@ -66,6 +66,19 @@
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
           <el-button type="primary" @click="transferTrue">确 定</el-button>
+        </div>
+      </el-dialog>
+
+      <el-dialog title="编辑" :visible.sync="dialogFormTime" :modal="false" width='500px'>
+        <el-form :model="r_data">
+          <el-form-item label="首次成单日期"  class="s_client_item">
+            <el-date-picker type="date" placeholder="请选择" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" v-model="r_data.success_time">
+						</el-date-picker>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormTime = false">取 消</el-button>
+          <el-button type="primary" @click="dialogFormTimeF">确 定</el-button>
         </div>
       </el-dialog>
 
@@ -127,6 +140,16 @@
                   <p style="height:10px;"></p>
                   <span>{{date.ask_time}}</span>
                 </div>
+
+                <div class="s_details_basic_rank">
+                  <p>
+                    <div style="color:#409eff;margin-right: 5px;float:left;margin-left: 0px;">●</div>
+                    首次成单时间 <i @click="chargeTime" v-if="button_root_first == 1" class="el-icon-edit"></i>
+                  </p>
+                  <p style="height:10px;"></p>
+                  <span>{{date.first_success_time}}</span>
+                </div>
+
                 <div class="s_details_basic_scale" style="width: 50%; margin: 15px 0px;">
                   <p><div style="color:#409eff;margin-right: 5px;float:left;margin-left: 0px;">●</div>备注</p>
                   <p style="height:10px;"></p>
@@ -451,6 +474,7 @@
 
     data () {
       return {
+        dialogFormTime:false,
         s_fuzeman:true,
         judgeLine:false, //如果来源为线下时 显示咨询方式
         judge:false, //如果来源为猪八戒时 显示咨询方式
@@ -483,6 +507,7 @@
           ask_method:'',    //咨询方式
           ask_time:'',
           brief:'',
+          first_success_time:''
         },
         // 修改客户数据后台需要的参数
         form : {
@@ -519,9 +544,14 @@
         contactList: [],                    // 联系人列表数据
         selectedOptions:'',                // 转移客户绑定的数组值
         dialogFormVisible: false,          // 转移客户弹窗的控制显示
-        dd_id: '',                        // 转移客户，负责人的dd_id
+        dd_id: '',    
+        button_root_first:0,                    // 转移客户，负责人的dd_id
         person: {
           client: '',                  // 转移客户选中负责人，绑定的值
+        },
+        r_data:{
+          id:this.$route.params.id,
+          success_time:''
         },
         project: false,                 // 转移客户下的项目
         order: false,                   // 转移客户下的订单
@@ -599,6 +629,32 @@
       }
     },
     methods: {
+      dialogFormTimeF(){
+        this.$post('client/editSuccessTime',this.r_data)
+          .then((data) => {
+            if(data.code) {
+              this.$message({
+                message: '修改成功！',
+                type:'wraning',
+              });
+              setTimeout(() => {
+                 this.dialogFormTime = false;
+                  this.$router.go(0);
+              }, 50);
+            }else {
+              this.$message({
+                message: data.errorMsg,
+                type:'wraning',
+              })
+            }
+          })
+          .catch(() => {
+
+          })
+      },
+      chargeTime(){
+        this.dialogFormTime = true;
+      },
       changeClientInfo(val){
         this.$post('client/selectPartner',{'id':this.$route.params.id,'dd_ids':val})
           .then((data) => {
@@ -950,6 +1006,10 @@
             this.date.source = client.source_show;
             this.date.rank = client.rank.name;
             this.date.scale = client.scale.name;
+            this.date.first_success_time = client.first_success_time;
+            this.r_data.success_time = client.first_success_time;
+            this.button_root_first = client.edit_first_success;
+
             if(client.partner !== null){
               // 循环partner 如果没有数据  使用is——show为false，如果有数据 则为true
               for(let i = 0; i < client.partner.length; i++){
@@ -1048,7 +1108,7 @@
   }
 </script>
 
-<style lang="less">
+<style lang="less"  type='scoped'>
   .clientDetails{
     .show{
       display: block;

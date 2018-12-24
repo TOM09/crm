@@ -28,7 +28,7 @@
         <div class="new_title">{{ruleForm.name}}</div>
         <el-form :model="ruleForm" ref="ruleForm" :rules="rules" label-width="150px">
           <el-form-item label="公司名称(必填)" prop="name">
-            <el-input v-model="ruleForm.name"placeholder="请输入">
+            <el-input v-model="ruleForm.name" placeholder="请输入">
             </el-input>
           </el-form-item>
           <el-form-item label="机构类型" prop="type_id">
@@ -62,11 +62,11 @@
             </el-select>
           </el-form-item>
           <el-form-item label="企业ID" prop="corpid" v-if="ruleForm.is_ding_synchro === 1 ? true : false">
-            <el-input v-model="ruleForm.corpid"placeholder="请输入">
+            <el-input v-model="ruleForm.corpid" placeholder="请输入">
             </el-input>
           </el-form-item>
           <el-form-item label="企业应用的凭证密钥" prop="corpsecret" v-if="ruleForm.is_ding_synchro === 1 ? true : false">
-            <el-input v-model="ruleForm.corpsecret"placeholder="请输入">
+            <el-input v-model="ruleForm.corpsecret" placeholder="请输入">
             </el-input>
           </el-form-item>
           <el-form-item style="margin-left: 30px;">
@@ -82,7 +82,7 @@
         <div class="new_title">{{form.name}}</div>
         <el-form :model="form" ref="form" label-width="150px" :rules="rule">
           <el-form-item label="部门名称" prop="name">
-            <el-input v-model="form.name"placeholder="请输入">
+            <el-input v-model="form.name" placeholder="请输入">
             </el-input>
           </el-form-item>
           <el-form-item label="机构类型" prop="type_id">

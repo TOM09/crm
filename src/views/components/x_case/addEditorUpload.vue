@@ -215,7 +215,6 @@
                     if (files.value && (files.value.indexOf(' ') == -1)) {
                         let loadingInstance = Loading.service({text: '拼命上传中'});
                         const fileLen = document.getElementById(_this.id).files;
-                        // console.log(fileLen);
                         for (let i = 0; i < fileLen.length; i++) {
                             const file = fileLen[i];
                             // 上传

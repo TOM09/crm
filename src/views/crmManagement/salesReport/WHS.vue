@@ -303,7 +303,6 @@
       },
       // 查询列表
       onSubmit () {
-        console.log(this.ruleForm)
         this.$get( 'report/taskTimeP',this.ruleForm)
           .then( (data) => {
             if(data.code){
@@ -336,8 +335,8 @@
       orderPerson() {
         this.$get( 'report/selectData',this.ruleForm)
           .then( (data) => {
+            console.log(data)
             this.product = data.content.product;
-            this.status = data.content.status;
           })
           .catch(() => {})
       }
@@ -346,11 +345,19 @@
       this.orderPerson();
       this.onSubmit();
       this.$store.dispatch('dept',{});
+
+      this.$get( 'manageNew/manageList',this.searchData)
+          .then ( (data) => {
+            this.status = data.content.step;
+          })
+          .catch (() => {
+            this.$message.error('服务器错误，请稍后重试');
+          })
     }
   }
 </script>
 
-<style lang="less">
+<style lang="less" type='scoped'>
   .Working {
     .raduisRigth{
       float: left;

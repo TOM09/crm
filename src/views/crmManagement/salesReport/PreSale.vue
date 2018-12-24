@@ -52,14 +52,24 @@
           </el-select>
         </el-form-item>
         <el-form-item prop="type" label="执行状态：" class="WHSInput" >
-          <el-select v-model="form.type" placeholder="请选择"  filterable clearable>
+          <!-- <el-select v-model="form.type" placeholder="请选择"  filterable clearable>
             <el-option
                 v-for="item in type"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
             </el-option>
-          </el-select>
+          </el-select> -->
+          <el-cascader 
+              expand-trigger="hover"
+              change-on-select
+              filterable 
+              clearable
+              class="s_order_search"
+              :options="searchList"
+              v-model="form.task_type" 
+              >
+          </el-cascader>
         </el-form-item>
         <el-form-item prop="call_type" label="调用类型：" class="WHSInput" >
           <el-select v-model="form.call_type" placeholder="请选择"  filterable clearable>
@@ -169,6 +179,7 @@
   export default {
     data () {
       return {
+        searchList:[],
         Authorization: cookies.get('access_token'),
         preSaleData:[],
         type:[],
@@ -209,6 +220,7 @@
           code:'',
           pro_name:'',
           type:'',
+          task_type:[],
           call_type:'',
           create_time:[],
           follow_time:[]
@@ -314,11 +326,19 @@
       this.selectPresale();
       this.onSubmit();
       this.$store.dispatch('dept',{});
+
+       this.$get( 'manageNew/manageList')
+          .then ( (data) => {
+            this.searchList = data.content.step;
+          })
+          .catch (() => {
+            this.$message.error('服务器错误，请稍后重试');
+          })
     }
   }
 </script>
 
-<style lang="less">
+<style lang="less"  type='scoped'>
   .PreSalesFollowUpDaily{
     .WHSInput {
       float: left;

@@ -492,10 +492,11 @@
   }
 </script>
 
-<style lang="less">
+<style lang="less"  type='scoped'>
   .user_list{
     .el-collapse-item__header{
       text-align: center;
+      display: block;
     }
     .user_search {
       float: left;

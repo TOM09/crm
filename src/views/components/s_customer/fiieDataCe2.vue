@@ -60,6 +60,28 @@
                 }
             }
         },
+        created() {
+            // 附件页
+            const _this = this;
+				this.$get("manage/manageAttachment", {
+					manage_id: this.$route.query.manage_id
+				})
+					.then(data => {
+					if (data.code) {
+                        this.file = data.content;
+                        var abc = data.content
+                        abc.forEach(function(item) {
+                            _this.urls.push({name:item.name,path:item.path})
+                        })
+                    }
+					})
+					.catch((data) => {
+					this.$message({
+						message: data.errorMsg,
+						type: "warning"
+						});
+                    });
+        },
         methods:{
             // 随机生成文件名
             random_string(len = 16) {
@@ -70,7 +92,6 @@
                     pwd += chars.charAt(Math.floor(Math.random() * maxPos));
                 }
                 let timestamp = new Date().getTime();
-
                 return pwd + '_' + timestamp;
             },
             triggerUpBtn() {
@@ -137,12 +158,13 @@
                             for(let i in urls) {
                                 if(urls[i].path === path) {
                                     this.urls.splice(i, 1);
+                                    // this.annexData.splice(i, 1);
                                     this.file.splice(i, 1);
                                 };
                             }
                             this.$message({
                                 type: 'success',
-                                message: '删除成功'
+                                message: '删除成功1'
                             });
                             this.percentage = 0;
                             // this.uploadFile = false;

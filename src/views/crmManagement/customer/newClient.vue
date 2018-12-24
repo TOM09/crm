@@ -173,7 +173,17 @@
         }, {
             cost_type: 4,
             label: '派单'
-        }],
+        }, {
+            cost_type: 11,
+            label: '顾问推广'
+        }, {
+            cost_type: 12,
+            label: '优选派单'
+        }, {
+            cost_type: 13,
+            label: '严选派单'
+        }
+        ],
         line: [{
             cost_type: 5,
             label: '自拓'

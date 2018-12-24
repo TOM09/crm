@@ -247,7 +247,6 @@
         });
       },
       handleChange (val) {
-        // console.log(val);
         this.companys.company_id = val;
         this.$store.dispatch('dept',this.companys);
       },
@@ -313,6 +312,9 @@
     }
     .el-collapse-item__header{
       text-align: center;
+    }
+    .el-collapse-item__header{
+      display: block;
     }
   }
 </style>

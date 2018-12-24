@@ -176,7 +176,6 @@
         this.success = data;
       },
       handleChangeproduct(value) {
-        // console.log(value);
         if(value[2]){
           this.ruleForm.product_id.push(value[2]);
         } else {
@@ -187,9 +186,6 @@
         this.ruleForm.file = data;
       },
       onSubmit (obj) {
-        console.log(this.ruleForm);
-        console.log(obj);
-
         if (!this.ruleForm.name){
           this.$message({
             message: '请填写项目名称',
@@ -258,7 +254,6 @@
       addItem() {
         this.$get( 'crmManagement/item/addItem')
           .then((data) => {
-            console.log(data)
             this.itemState = data.content.stage;
             this.selectCustomers = data.content.client;
             this.product = data.content.product;

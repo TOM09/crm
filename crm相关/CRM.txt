@@ -7,7 +7,7 @@ sftp://root@47.94.137.255//mnt/site/vipyipoint_api/public
 
 测试服地址： test.vipyipoint.com
 正式服地址： www.vipyipoint.com
-账号：杨秋萍手机号 18519331339   密码：123456
+账号：杨秋萍手机号 18519331339 密码：123456
 
 chrome://inspect/#devices
 

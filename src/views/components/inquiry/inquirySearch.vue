@@ -337,7 +337,7 @@ import Util from '@/libs/util';
     }
   }
 </script>
-<style lang="less">
+<style lang="less" type='scoped'>
 .inquirySearch {
     .s_order_search{
       width: 220px;
@@ -358,6 +358,9 @@ import Util from '@/libs/util';
     }
     .el-collapse-item__header{
       text-align: center;
+    }
+    .el-collapse-item__header{
+      display: block;
     }
 }
 </style>

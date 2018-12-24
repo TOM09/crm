@@ -250,6 +250,7 @@
     props: [],
     data() {
       return {
+        link_type:0,
         success:false,
         detailed: [],
         task_id: 0,
@@ -308,7 +309,8 @@
         this.$router.push({
           name: 'workInfo',
           query: {
-            manage_id: this.date.manage_id
+            manage_id: this.date.manage_id,
+            work_type:this.link_type
           }
         });
       },
@@ -465,6 +467,7 @@
             this.add_excuter_button = data.content.add_excuter_button;
             this.task_id = this.$route.params.id;
             this.date.manage_id = client.manage_id;
+            this.link_type = client.link_type;
             //修改提交数据
             this.form.task_id = this.$route.params.id;
             this.form.title = client.title;

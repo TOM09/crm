@@ -57,16 +57,16 @@
           </el-date-picker>
         </el-form-item>
     
-        <el-form-item label="是否印刷" prop="printing" style="float: left;">
+        <el-form-item label="是否印刷" prop="printing">
           <el-switch v-model="ruleForm.printing"></el-switch>
         </el-form-item>
-        <el-form-item label="是否拍摄" prop="photo" style="float: left;">
+        <el-form-item label="是否拍摄" prop="photo">
           <el-switch v-model="ruleForm.photo"></el-switch>
         </el-form-item>
         <div style="clear: both"></div>
         <el-form-item label="产品信息" prop="pro_info">
           <el-button type="primary" round @click="orderBtn" plain size="small" style="margin-left: 10px">增加产品(必填)</el-button>
-          <el-table :data="ruleForm.pro_info" style="width: 80%" max-height="250">
+          <el-table :data="ruleForm.pro_info" style="width: 80%;" max-height="650">
             <el-table-column fixed prop="product_id.name" label="产品信息"></el-table-column>
             <el-table-column fixed prop="pro_period" label="周期（工作日）"></el-table-column>
             <el-table-column fixed prop="pro_std_price" label="标准价格（元）"></el-table-column>
@@ -172,10 +172,9 @@
               </el-input>
             </el-form-item>
             <el-form-item label="标准价格（元）">
-              <el-input v-model="order.pro_std_price" type="number" class="s_client_width" placeholder="请输入价格">
-              </el-input>
+              <input  @keydown="handleInput2"  onpaste="alert('请手动输入价格');return false;"  v-model="order.pro_std_price" type="number" class="s_client_width s_client_widthInput" placeholder="请输入价格">
             </el-form-item>
-            <el-form-item label="合同价格（元）(必填)">
+            <el-form-item label="合同价格（元）(必填)" onpaste="alert('请手动输入价格');return false;" >
               <!-- <el-input @keydown="handleInput2" v-model="order.pro_contract_price" type="number" class="s_client_width" placeholder="请输入价格">
               </el-input> -->
                 <input @keydown="handleInput2" v-model="order.pro_contract_price" type="number" class="s_client_width s_client_widthInput" placeholder="请输入价格">
@@ -206,6 +205,8 @@
         order: {},
         success:false,
         ruleForm: {
+          btn:1,
+          task_type:[],
           condition:[],
           auto_manage: 2, //审批通过后申请执行
           project_id: '',
@@ -354,7 +355,7 @@
                   if(pro_arr[i]['children'][j]['children'][x]['value'] == this.numberShiYan){
                     this.order.product_id.name = pro_arr[i]['children'][j]['children'][x]['label'];
                     this.order.product_id.id = pro_arr[i]['children'][j]['children'][x]['value'];
-                  
+            
                   }
                 }
               }
@@ -456,14 +457,15 @@
           this.$post('crmManagement/order', this.ruleForm)
             .then((data) => {
               if(data.code == 201){
+                this.$router.push({name: 'orderDetail', params: {id: data.content.id}})
+
                 this.$message({
-                  message: data.errorMsg,
+                  message: '保存成功！',
                   type: 'success'
                 });
+                
                 this.success = true;
-                this.$router.go(0)
                 this.$refs[formName].resetFields();
-                this.$router.push({name: 'orderDetail', params: {id: data.content.id}})
               }else {
                 this.$message.error(data.errorMsg);
               }
@@ -569,7 +571,7 @@
   }
 </script>
 
-<style lang="less" scoped>
+<style lang="less"  type='scoped'>
   .haddOrder{
     .s_client_width {
       width: 300px;
@@ -578,9 +580,7 @@
     .s_client_width2 {
       width: 300px !important;
     }
-    .el-form-item__content{
-      margin-left: 0 !important;
-    }
+  
     .s_new_title {
       width: 100%;
       height: 50px;

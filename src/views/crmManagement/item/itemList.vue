@@ -16,7 +16,7 @@
          </el-tab-pane>
          <el-tab-pane label="已成单项目" name="has_order">
            <itemSearch @itemQuery="itemQuery" :range="form.range"></itemSearch>
-           <ItemAll ref="profile":itemList="itemList" :count="count" @itemPaging="itemPaging"></ItemAll>
+           <ItemAll ref="profile" :itemList="itemList" :count="count" @itemPaging="itemPaging"></ItemAll>
          </el-tab-pane>
          <el-tab-pane label="超过七天未跟进" name="no_follow">
            <itemSearch @itemQuery="itemQuery" :range="form.range"></itemSearch>
@@ -54,7 +54,6 @@
     methods: {
       handleClick(tab) {
         this.form.range = tab.name;
-        // console.log(this.form.range);
         this.itemAjax();
       },
       itemAjax () {

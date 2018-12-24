@@ -318,6 +318,10 @@
           </el-form-item>
           <!-- 跟进 -->
           <span v-if="is_flow === 6">
+            	<el-form-item label="客户名称" prop="company">
+							<el-input v-model="formAll.company" placeholder="请输入客户名称" class="s_item_form">
+							</el-input>
+						</el-form-item>
 						<el-form-item label="项目名称" prop="name">
 							<el-input v-model="formAll.name" placeholder="请输入项目名称" class="s_item_form">
 							</el-input>
@@ -577,6 +581,7 @@
           sale_id:'',
           brief:'',
           back_reason:'',
+          company:'',
           //新增项目(跟进)
           client_id: '',
           origin: [],
@@ -647,6 +652,9 @@
             { required: true, message: '请输入', trigger: 'blur' },
           ],
           //跟进相关验证
+          company:[
+            { required: true, message: '请输入', trigger: 'blur' },
+          ],
           name:[
             { required: true, message: '请输入', trigger: 'blur' },
           ],
@@ -717,9 +725,21 @@
         this.activeName = tab.name;
       },
       consultDetail () {
+        this.$get('consult/clientInfo',{id:this.$route.params.id})
+      .then((data) => {
+        if(data.code) {
+          this.formAll.company = data.content.company;          
+        }else {
+          this.$message({
+            type:'warning',
+            message:data.errorMsg
+          })
+        }
+      })
+      .catch(() => {});
+
         this.$get( 'consult/detail',{id:this.$route.params.id})
           .then( (data) => {
-            console.log(data)
             if(data.code) {
               let obj = data.content.consult_info;
               this.detail = obj;
@@ -958,6 +978,9 @@
       },
       //咨询
       endConsult (formName) {
+        console.log(this.formAll)
+        console.log(this.is_flow)
+
         if(this.is_flow === 6) {
           this.$refs[formName].validate((valid) => {
             if (valid) {

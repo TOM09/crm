@@ -120,7 +120,6 @@
       if(this.$route.query.dd_id && this.$route.query.dist ){
         this.$get( 'login',{dd_id:this.$route.query.dd_id,dist:this.$route.query.dist})
           .then( (data) => {
-                console.log(2,data)
             if(data.code){
               let menu_list = data.content.menu_list;
               Cookies.set('access',menu_list.join(","));

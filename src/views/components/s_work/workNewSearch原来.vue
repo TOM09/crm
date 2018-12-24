@@ -19,8 +19,8 @@
           <el-form-item prop="person" label="申请人:" class="s_client_item">
             <el-select v-model="searchForm.person" clearable filterable placeholder="请选择" class="s_client_sel_div">
               <el-option
-                  v-for="item in persons"
-                  :key="item.index"
+                  v-for="item in person"
+                  :key="item.dd_id"
                   :label="item.nickname"
                   :value="item.dd_id">
               </el-option>
@@ -30,16 +30,13 @@
             <el-select v-model="searchForm.ae" clearable filterable placeholder="请选择" class="s_client_sel_div">
               <el-option
                   v-for="item in searchList.ae"
-                  :key="item.index"
+                  :key="item.dd_id"
                   :label="item.nickname"
                   :value="item.dd_id">
               </el-option>
             </el-select>
           </el-form-item>
-
-
-
-          <!-- <el-form-item prop="task_type" label="工单类型:" class="s_client_item">
+          <el-form-item prop="task_type" label="工单类型:" class="s_client_item">
             <el-select v-model="searchForm.task_type" filterable clearable placeholder="请选择" class="s_client_sel_div">
               <el-option
                   v-for="item in searchList.task_type"
@@ -48,22 +45,17 @@
                   :value="item.value">
               </el-option>
             </el-select>
-          </el-form-item> -->
-
-          <el-form-item  prop="task_type" label="工单类型:" class="s_client_item">
-            <el-cascader 
-            class="s_client_sel_div"
-              expand-trigger="hover"
-              change-on-select
-              filterable 
-              clearable
-              :options="searchList.step"
-              v-model="searchForm.task_type" 
-              @change="handleChange"
-              >
-            </el-cascader>
           </el-form-item>
-            <!-- :show-all-levels="false" :options="searchListStep" searchList.step-->
+          <!--<el-form-item prop="client" label="客户名称:" class="s_client_item">-->
+          <!--<el-select v-model="searchForm.client" clearable filterable placeholder="请选择" class="s_client_sel_div">-->
+          <!--<el-option-->
+          <!--v-for="item in searchList.client"-->
+          <!--:key="item.id"-->
+          <!--:label="item.company"-->
+          <!--:value="item.id">-->
+          <!--</el-option>-->
+          <!--</el-select>-->
+          <!--</el-form-item> -->
           <el-form-item prop="client" label="客户名称:" class="s_client_item">
             <el-input v-model="searchForm.client" clearable autosize placeholder="请输入客户名" class="s_client_sel_div"></el-input>
           </el-form-item>
@@ -71,14 +63,23 @@
           <el-form-item prop="executor" label="执行人员:" class="s_client_item">
             <el-select v-model="searchForm.executor" filterable clearable placeholder="请选择" class="s_client_sel_div">
               <el-option
-                  v-for="item in persons"
+                  v-for="item in person"
                   :key="item.dd_id"
                   :label="item.nickname"
                   :value="item.dd_id">
               </el-option>
             </el-select>
           </el-form-item>
-
+          <el-form-item prop="step" label="状态:" class="s_client_item">
+            <el-select v-model="searchForm.step" clearable filterable placeholder="请选择" class="s_client_sel_div">
+              <el-option
+                  v-for="item in searchList.step"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item prop="productList" label="产品信息:" class="s_client_item">
             <el-cascader
                 class="s_client_sel_div"
@@ -92,23 +93,12 @@
                 @change="handleChange">
             </el-cascader>
           </el-form-item>
-
-           <!-- <el-form-item prop="step" label="状态:" class="s_client_item">
-            <el-select v-model="searchForm.step" clearable filterable placeholder="请选择" class="s_client_sel_div">
-              <el-option
-                  v-for="item in searchList.step"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item> -->
           <el-form-item prop="manage_number" label="服务商:" class="s_client_item">
             <el-input v-model="searchForm.service" clearable autosize placeholder="请输入" class="s_client_sel_div"></el-input>
           </el-form-item>
           <el-form-item prop="time" label="申请日期:" class="s_client_item">
             <el-date-picker
-                class="s_client_sel_div_n s_client_sel_div_n2"
+                class="s_client_sel_div_n"
                 v-model="searchForm.time"
                 unlink-panels
                 type="daterange"
@@ -133,8 +123,7 @@
 <script>
   export default {
     name: 'workList',
-    props:
-    {
+    props:{
       searchList:{
         type: Object
       },
@@ -144,7 +133,6 @@
     },
     data () {
       return {
-        searchListStep:[],
         // person: [],
         searchForm: {
           ae: '',
@@ -152,7 +140,7 @@
           client: '',
           product: '',
           person: '',
-          task_type: [],
+          task_type: '',
           executor: '',
           manage_number: '',
           time: '',
@@ -191,7 +179,6 @@
     methods: {
       handleChange() {
         this.searchForm.product = this.searchForm.productList[2];
-        this.searchForm.step = this.searchForm.task_type[1];
       },
       resetForm (formName) {
         this.searchForm.product = '';
@@ -206,20 +193,19 @@
         } else if(this.page == 2) {
           this.$emit("searchNewMyList",searchForm);
         }
-      },
+      }
     },
     computed: {
-      persons () {
+      person () {
         return this.$store.state.app.commonPerson;
       }
     },
     created () {
-      // this.remoteMethod()
     }
   }
 </script>
 
-<style lang="less"  type='scoped'>
+<style lang="less">
   .workNewSearch{
     .workNewList {
       text-align: center;
@@ -240,9 +226,6 @@
     .s_client_sel_div_n{
       width: 300px;
     }
-     .s_client_sel_div_n2{
-      width: 271px!important;
-    }
     .s_client_btn{
       width: 200px;
       float: left;
@@ -257,9 +240,6 @@
     }
     .el-collapse-item__header{
       text-align: center;
-    }
-    .el-collapse-item__header{
-      display: block!important;
     }
   }
 </style>

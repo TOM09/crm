@@ -85,14 +85,12 @@
 
                     });
                 this.name = tab.name;
-                // console.log(this.searchData);
             },
             searchNew (data) {
                 this.searchData = data;
                 this.searchData.range = this.name;
                 this.$get( 'crmManagement/order/index',this.searchData)
                     .then( (data) => {
-                        
                         this.orderList = data.content.orderList;
                         this.count = data.content.count;
                     })

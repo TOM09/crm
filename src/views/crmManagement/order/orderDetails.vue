@@ -137,7 +137,11 @@
                 <span>{{ date.name }}</span>
               </el-col>
               <el-col :span="8">
-                <p><i style="color: rgb(64, 158, 255); margin-right: 5px; margin-left: 0px;">●</i>成单日期</p>
+                <p>
+                  <i style="color: rgb(64, 158, 255); margin-right: 5px; margin-left: 0px;">●</i>
+                   <!-- v-if="button_root_first == 1" -->
+                  成单日期 <i @click="chargeTime"  v-if="button_root_first == 1" class="el-icon-edit"></i>
+                </p>
                 <span>{{ date.success_time }}</span>
               </el-col>
               <el-col :span="8">
@@ -163,6 +167,14 @@
               <el-col :span="8">
                 <p style="margin-bottom:5px;color:#000;"><i style="color: rgb(64, 158, 255); margin-right: 5px; margin-left: 0px;">●</i>需要拍摄</p>
                 <span>{{ date.photo ? '是' : '否' }}</span>
+              </el-col>
+              <el-col :span="8">
+                <p style="margin-bottom:5px;color:#000;">
+                  <i style="color: rgb(64, 158, 255); margin-right: 5px; margin-left: 0px;">●</i>
+                  标记 <i @click="chargeMarke"  v-if="button_root_first == 1" class="el-icon-edit"></i>
+                </p>
+                <el-tag class='spanName' size='mini'  v-if="is_repeat == 1">新购</el-tag>
+                <el-tag class='spanName' size='mini'  v-if="is_repeat == 2">复购</el-tag>
               </el-col>
               <div style="clear: both;"></div>
               <el-row class="x_product">
@@ -240,7 +252,7 @@
             <el-table-column fixed prop="number" label="工单编号"></el-table-column>
             <el-table-column prop="person" label="发起人"></el-table-column>
             <el-table-column prop="link_type" label="工单类型"></el-table-column>
-            <el-table-column prop="status" label="状态"></el-table-column>
+            <el-table-column prop="step" label="状态"></el-table-column>
             <el-table-column prop="next_person" label="下一步操作人"></el-table-column>
             <el-table-column prop="update_time" label="更新日期"></el-table-column>
             <el-table-column prop="create_time" label="创建日期"></el-table-column>
@@ -412,11 +424,11 @@
                         <el-input v-model="order.pro_period" class="s_order_new" placeholder="请输入"></el-input>
                     </el-form-item>
                     <el-form-item label="标准价格（元）">
-                        <el-input v-model="order.pro_std_price" class="s_order_new" placeholder="请输入价格"></el-input>
+                        <input  @keydown="handleInput2" onpaste="alert('请手动输入价格');return false;" v-model="order.pro_std_price" type="number" class="s_client_width s_client_widthInput" placeholder="请输入价格">
                     </el-form-item>
                     <el-form-item label="合同价格(元)(必填)">
                         <!-- <el-input v-model="order.pro_contract_price" class="s_order_new" placeholder="请输入价格"></el-input> -->
-                        <input @keydown="handleInput2" v-model="order.pro_contract_price" type="number" class="s_client_width s_client_widthInput" placeholder="请输入价格">
+                        <input @keydown="handleInput2"  onpaste="alert('请手动输入价格');return false;" v-model="order.pro_contract_price" type="number" class="s_client_width s_client_widthInput" placeholder="请输入价格">
                     </el-form-item>
                     <el-form-item label="产品备注">
                         <el-input type="textarea" :rows="3" v-model="order.pro_brife" class="s_order_new" placeholder="请输入备注"></el-input>
@@ -601,6 +613,37 @@
             </span>
     </el-dialog>
 
+    <!-- 成单日期 -->
+     <el-dialog title="编辑" :visible.sync="dialogFormTime" :modal="false" width='500px'>
+        <el-form :model="r_data">
+          <el-form-item label="成单日期"  class="s_client_item">
+            <el-date-picker type="date" class='inputText' placeholder="请选择" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" v-model="r_data.success_time">
+						</el-date-picker>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormTime = false">取 消</el-button>
+          <el-button type="primary" @click="dialogFormTimeF">确 定</el-button>
+        </div>
+      </el-dialog>
+
+      <!-- 标记 -->
+     <el-dialog title="编辑" :visible.sync="dialogFormMarke" :modal="false" width='500px'>
+        <el-form :model="r_data">
+          <el-form-item label="标记"  class="s_client_item">
+            <el-select v-model="r_data.is_repeat" class='inputText'>
+              <el-option label="新购" value="1"></el-option>
+              <el-option label="复购" value="2"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormMarke = false">取 消</el-button>
+          <el-button type="primary" @click="dialogFormMaker">确 定</el-button>
+        </div>
+      </el-dialog>
+
+    <!-- 编辑共同负责人 -->
     <el-dialog title="编辑共同负责人" :visible.sync="dialogFormVisible1" :modal="false">
       <el-form :model="form">
         <el-form :inline="true">
@@ -633,7 +676,7 @@
         </el-form>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+        <el-button  @click="dialogFormVisible1 = false">取 消</el-button>
         <el-button type="primary" @click="CoinCharge">确 定</el-button>
       </div>
     </el-dialog>
@@ -651,6 +694,8 @@
     },
     data () {
       return {
+        dialogFormMarke:false,
+        dialogFormTime:false,
         pushpriceArray:[],
         value:true,
         dialogVisible:false,
@@ -681,6 +726,7 @@
           ordeFile: [],
           file: []
         },
+        button_root_first:0,
         success: false,
         button_root: false,
         brife: '',
@@ -718,6 +764,7 @@
           is_plan: 0,
           periods_number:'',
         },
+        is_repeat:0,
         date:{                             // 详情修改的参数
           id:'',
           clientName: '',
@@ -741,6 +788,7 @@
           condition:[],               //审批流参数
           invoice_title:'',     //发票抬头
           tax_number:'',        //纳税人编号
+          
           info:{
             id:'',
             order_id:'',
@@ -754,6 +802,11 @@
           status:'',      //订单状态
           transfer_price:'', //已回款
         },
+        r_data:{
+            is_repeat:'1',
+            id:this.$route.params.id,
+            success_time:''
+          },
         project:[],
         trench:[],
         invoice_type:[],
@@ -823,6 +876,61 @@
       }
     },
     methods:{
+       dialogFormTimeF(){
+        this.$post('crmManagement/order/editSuccessTime',this.r_data)
+          .then((data) => {
+            if(data.code) {
+              this.dialogFormTime = false;
+              this.$message({
+                message: '修改成功！',
+                type:'wraning',
+              })
+              setTimeout(() => {
+                this.r_data = {};
+                this.$router.go(0);
+              }, 50);
+              this.r_data = {};
+              this.dialogFormTime = false;
+              this.$router.go(0);
+            }else {
+              this.$message({
+                message: data.errorMsg,
+                type:'wraning',
+              })
+            }
+          })
+          .catch(() => {
+          })
+      },
+      dialogFormMaker(){
+        this.$post('crmManagement/order/editRepeat',{id:this.r_data.id,is_repeat:this.r_data.is_repeat})
+          .then((data) => {
+            if(data.code) {
+              this.$message({
+                message: '修改成功！',
+                type:'wraning',
+              })
+               setTimeout(() => {
+                 this.dialogFormMarke = false;
+                this.r_data = {};
+                this.$router.go(0);
+              }, 50);
+            }else {
+              this.$message({
+                message: data.errorMsg,
+                type:'wraning',
+              })
+            }
+          })
+          .catch(() => {
+          })
+      },
+          chargeTime(){
+            this.dialogFormTime = true;
+          },
+          chargeMarke(){
+            this.dialogFormMarke = true;
+          },
        handleInput2(e) {
             // 通过正则过滤小数点后两位
           e.target.value = (e.target.value.match(/^\d*(\.?\d{0,1})/g)[0]) || null
@@ -945,6 +1053,9 @@
             this.date.salesman = order.salesman
             this.date.project = order.project;
             this.date.success_time = order.success_time;
+            this.r_data.success_time = order.success_time;
+            this.button_root_first = order.edit_success_time_btn;
+
             this.date.trench = order.trench;
             this.date.name = order.name;
             this.date.service_start_time = order.service_start_time;
@@ -973,7 +1084,12 @@
             this.form.auto_manage = order.auto_manage;              // 审批通过后的默认值
             this.approve_status = order.approve_status;             // 审批状态按钮
             this.date.detail = order.detail;                        // 备注
-            this.log = data.content.log;                            // 备注
+            this.log = data.content.log; 
+            this.is_repeat = order.is_repeat; 
+            if(order.is_repeat != null){
+              this.r_data.is_repeat = order.is_repeat.toString();
+            }
+
             this.form.pro_info = order.pro_info;                    // 产品
             this.form.project_id = order.project.id;                // 默认
             this.form.shop = data.content.order.shop.id;
@@ -1041,6 +1157,7 @@
       },
       // 打开修改订单信息的弹窗
       dialogOpen () {
+        this.orderFile()
         this.dialogTableVisible = true;
       },
       // 跳转客户
@@ -1121,7 +1238,7 @@
       // 确定发起执行工单
       dialogFormVisibleTrue () {
         this.orderTo.ordeFile = this.fileListData;
-        this.$post( 'manage/manageOrder',this.orderTo)
+        this.$post( 'manageNew/manageOrder',this.orderTo)
           .then( (data) => {
             if(data.code){
               this.$message({
@@ -1131,7 +1248,7 @@
               this.success = true;
               this.dialogFormVisible = false;
               this.orderTo = {};
-              this.$router.push({name: 'workInfo', query: {manage_id: data.content.manage_id, task_id: data.content.task_id}})
+              this.$router.push({name: 'workInfo', query: {manage_id: data.content.manage_id, work_type:2}})
             } else {
               this.$message.error(data.errorMsg);
             }
@@ -1318,7 +1435,7 @@
       },
       // 工单列表
       workList() {
-        this.$get( 'manage/orderManage',{id: this.$route.params.id})
+        this.$get( 'manageNew/orderManage',{id: this.$route.params.id})
           .then( (data) => {
             this.workListData = data.content;
           })
@@ -1330,8 +1447,8 @@
           name: 'workInfo',
           query: {
             manage_id: row.manage_id,
-            step: row.step,
-            task_id: row.task_id
+            // task_id: row.task_id
+            work_type:2
           }
         })
       },
@@ -1667,7 +1784,7 @@
   }
 </script>
 
-<style lang="less" scoped>
+<style lang="less"  type='scoped'>
   .orderDetails {
     .x_product{
       margin-bottom: 20px;
@@ -1830,5 +1947,15 @@
     }
     .s_client_widthInput:-ms-input-placeholder { /* Internet Explorer 10+ */
         color:    #c3c7cf;
+    }
+    .spanName{
+      border: 1px solid #409eff;
+      color:#409eff!important;
+      text-align: center;
+      line-height: 22px!important;
+      font-size: 12px!important;
+    }
+    .inputText{
+      width: 300px!important;
     }
 </style>

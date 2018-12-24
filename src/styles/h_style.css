@@ -27,16 +27,15 @@
 .hitemlisttop .el-button--text{
   margin-left: 10px;
 }
-.hblock .el-table thead{
+/* .hblock .el-table thead{
   background: #fafafa;
   color: #000;
-}
+} */
 .hitemList .el-collapse-item__wrap{
   padding-top: 20px;
   border-bottom: none;
 }
-.hitemList .el-table__fixed-body-wrapper{
-}
+
 .hitemList .el-table__header{
   padding-top: 20px;
 }

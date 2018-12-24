@@ -129,7 +129,6 @@
                                 }
                             };
                             /*// 上传
-                            console.log(_this.size);
                             if(this.size){
                                 let fileName = this.random_string();
                                 client.multipartUpload('crmFiles/' + fileName + '.' + fileName_v, file, {

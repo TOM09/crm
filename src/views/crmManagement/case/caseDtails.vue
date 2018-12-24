@@ -490,7 +490,6 @@
         this.$get('case/' + this.$route.params.id)
           .then((data) => {
             if(data.code) {
-              console.log(data);
               this.id = data.content.id;
               this.date.name = data.content.name;
               this.date.client = data.content.client;

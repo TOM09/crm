@@ -15,7 +15,7 @@
 			<el-card class="orderCopy" :body-style="{ padding: '0px' }"  v-if="form.orderList.length === 0">
 				工单吃鸡去了，没有工单了！
 			</el-card>
-            <router-link :to="{ name: 'workInfo', query: { manage_id: item.manage_id,step: item.step,task_id: item.id }}" v-for="(item, index) in form.orderList" :key="item.index" v-if="index<3" class="x_list">
+            <router-link :to="{ name: 'workInfo', query: { manage_id: item.manage_id,work_type: item.task_type,step: item.step,task_id: item.id }}" v-for="(item, index) in form.orderList" :key="item.index" v-if="index<3" class="x_list">
 				<p class="portrait">
 					<img v-if="item.avatar" :src="item.avatar" alt=""/>
                     <span v-else> {{item.person}}</span>

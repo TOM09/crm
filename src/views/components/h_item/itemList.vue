@@ -69,7 +69,7 @@
     },
     methods: {
       openClick () {
-        this.$router.push({name: 'addItem'})
+        this.$router.push({path: '/addItem'})
       },
       toggleSelection(){
         this.$refs.multipleTable.clearSelection();
@@ -112,7 +112,7 @@
     }
   }
 </script>
-<style>
+<style scoped>
   .el-table__row:hover{
     cursor: pointer;
   }

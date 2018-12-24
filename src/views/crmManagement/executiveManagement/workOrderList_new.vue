@@ -3,13 +3,13 @@
     <el-card>
       <el-tabs class="s_woek_tab" @tab-click="handleClick">
         <el-tab-pane class="s_work_pane">
-          <el-badge slot="label" :is-dot ="this.showCount > 0" class="item">待办工单</el-badge>
-          <workSearch :searchList="searchList,page" :searchListStep = 'searchListStep' @searchNewList="searchNewList"></workSearch>
+          <el-badge slot="label" :is-dot ="this.showCount > 0" class="item">办工单</el-badge>
+          <workSearch :searchList="searchList,page" @searchNewList="searchNewList"></workSearch>
           <workList :workListLoad="workListLoad,count,page,searchData" @workList="workList"></workList>
         </el-tab-pane>
         <el-tab-pane class="s_work_pane">
           <el-badge slot="label" class="item">全部工单</el-badge>
-          <workSearch :searchList="searchList,page"  @searchNewListAll="searchNewListAll"></workSearch>
+          <workSearch :searchList="searchList,page" @searchNewListAll="searchNewListAll"></workSearch>
           <workList :workListLoad="workListLoad,count,page,searchData" @workListAll="workListAll"></workList>
         </el-tab-pane>
         <el-tab-pane class="s_work_pane">
@@ -37,12 +37,11 @@
         pageSize: 10,
         page: 0,
         searchList: {
-          product:[],
-          step:[]
+          product:[]
         },
         searchData:{
-        },
-        searchListStep:[]
+
+        }
       }
     },
     methods: {
@@ -58,7 +57,7 @@
       searchNewList(data) {
         this.searchData = data;
         this.searchData['range'] = "pending";
-        this.$get( 'manageNew/manageList',this.searchData)
+        this.$get( 'manage/manageList',this.searchData)
           .then ( (data) => {
             this.workListLoad = data.content.data;
             this.count = data.content.count;
@@ -72,7 +71,7 @@
       searchNewListAll (data) {
         this.searchData = data;
         this.searchData['range'] = "all";
-        this.$get( 'manageNew/manageList',this.searchData)
+        this.$get( 'manage/manageList',this.searchData)
           .then ( (data) => {
             this.workListLoad = data.content.data;
             this.count = data.content.count;
@@ -85,7 +84,7 @@
       searchNewMyList  (data) {
         this.searchData = data;
         this.searchData['range'] = "mine";
-        this.$get( 'manageNew/manageList',this.searchData)
+        this.$get( 'manage/manageList',this.searchData)
           .then ( (data) => {
             this.workListLoad = data.content.data;
             this.count = data.content.count;
@@ -97,7 +96,7 @@
       },
       handleClick (tab) {
         if(tab.index == 0){
-          this.$get( 'manageNew/manageList',{range :"pending"})
+          this.$get( 'manage/manageList',{range :"pending"})
             .then ( (data) => {
               this.workListLoad = data.content.data;
               this.count = data.content.count;
@@ -109,7 +108,7 @@
               this.$message.error('服务器错误，请稍后重试');
             })
         } else if (tab.index == 1) {
-          this.$get( 'manageNew/manageList',{range :"all"})
+          this.$get( 'manage/manageList',{range :"all"})
             .then ( (data) => {
               this.workListLoad = data.content.data;
               this.count = data.content.count;
@@ -119,7 +118,7 @@
               this.$message.error('服务器错误，请稍后重试');
             })
         } else if (tab.index == 2) {
-          this.$get( 'manageNew/manageList',{range :"mine"})
+          this.$get( 'manage/manageList',{range :"mine"})
             .then ( (data) => {
               this.workListLoad = data.content.data;
               this.count = data.content.count;
@@ -138,10 +137,9 @@
       },
       workListNewData() {
         this.searchData['range'] = "pending";
-        this.$get( 'manageNew/manageList',this.searchData)
+        this.$get( 'manage/manageList',this.searchData)
           .then ( (data) => {
             this.searchList = data.content;
-            this.searchListStep = data.content.step;
             this.workListLoad = data.content.data;
             this.count = data.content.count;
             this.showCount = data.content.count;
@@ -157,7 +155,7 @@
         this.workListNewData();
       } else if (this.page == 1){
         this.searchData['range'] = "all";
-        this.$get( 'manageNew/manageList',this.searchData)
+        this.$get( 'manage/manageList',this.searchData)
           .then ( (data) => {
             this.workListLoad = data.content.data;
             this.count = data.content.count;
@@ -168,7 +166,7 @@
           })
       } else if (this.page == 2){
         this.searchData['range'] = "mine";
-        this.$get( 'manageNew/manageList',this.searchData)
+        this.$get( 'manage/manageList',this.searchData)
           .then ( (data) => {
             this.workListLoad = data.content.data;
             this.count = data.content.count;
@@ -182,7 +180,7 @@
   }
 </script>
 
-<style lang="less" type='scoped'>
+<style lang="less">
   .workOrderList {
     .s_woek_tab {
       width: 100%;

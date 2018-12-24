@@ -137,7 +137,7 @@
             </div>
 
             <el-table :data="executorData" border v-if='executorDataleading != null || executorDataleadingAe != null'>
-              <el-table-column prop="service_leading_nickname" label="客服负责人"></el-table-column>
+              <el-table-column prop="service_leading" label="客服负责人"></el-table-column>
               <el-table-column prop="ae" label="客服"></el-table-column>
               <el-table-column prop="position" label="职位"></el-table-column>
               <el-table-column prop="department" label="部门"></el-table-column>
@@ -382,35 +382,19 @@
       </el-tabs>
     </div>
 
-<!-- 跟进记录 -->
-<el-dialog :visible.sync="executiveLoggingEye" class='multipleTableColor multipleTableColor2' title="跟进记录" :modal-append-to-body="false" width="90%">
+<!-- 执行记录小眼睛 -->
+<el-dialog :visible.sync="executiveLoggingEye" class='multipleTableColor multipleTableColor2' title="执行记录" :modal-append-to-body="false" width="90%">
       <p class='executiveLogT'><el-checkbox class='checkedHave' @change = 'changeContent'>只显示有内容后的记录</el-checkbox></p> 
       <el-card class="box-card">
             <div class="block">
                 <span class="demonstration">
                     <el-table ref="multipleTable" :data="eyeChangeRecord" tooltip-effect="dark" style="width: 100%"  align="center">
-                        <el-table-column prop="name" 
-                        label="产品" width='100px'
-                        :filters="followArray"
-                       :filter-method="followArrayChange"
-                        >
-
-                        </el-table-column>
-                        <el-table-column prop="product_brief" label="产品说明"  width='100px'></el-table-column>
-                        <el-table-column prop="create_time" label="记录时间"  width='120px'></el-table-column>
-                        <el-table-column prop="excutor_brief" label="记录内容"></el-table-column>
-                        <el-table-column prop="excutor_status_desc" label="执行进度" width="100"
-                            :filters="executorChange4DataArray"
-                          :filter-method="getFollowUpStatusChange"
-                        >
-
-                        </el-table-column>
-                        <el-table-column prop="nickname" label="记录人" width="100"
-                        :filters="followNickname"
-                       :filter-method="followArrayChangePeople"
-                        >
-
-                        </el-table-column>
+                        <el-table-column prop="name" label="产品"></el-table-column>
+                        <el-table-column prop="product_brief" label="产品说明"></el-table-column>
+                        <el-table-column prop="create_time" label="记录时间"></el-table-column>
+                        <el-table-column prop="excutor_brief" label="记录内容" width="180"></el-table-column>
+                        <el-table-column prop="excutor_status_desc" label="执行进度"></el-table-column>
+                        <el-table-column prop="nickname" label="记录人"></el-table-column>
                     </el-table>
                 </span>
                 <el-pagination
@@ -462,19 +446,8 @@
 <!-- 成单执行中的的更换客服 -->
 <el-dialog  :visible.sync="workInReplace" title="更换客服" :modal="false" width="550px" class='executiveLogging3'>
       <el-form :model="replaceform" label-width="120px" class='executiveLogging3Top'>
-       <el-form-item label="客服负责人" class='is-required'>
-          <el-select v-model="replaceform.service_leading" filterable placeholder="请选择" class='inputWarn'>
-              <el-option
-                  v-for="item in person"
-                  :key="item.dd_id"
-                  :label="item.nickname"
-                  :value="item.dd_id"
-                  >
-              </el-option>
-          </el-select>
-        </el-form-item>
-
         <el-form-item label="新客服" class='is-required'>
+                 
           <el-select v-model="replaceform.new_dd_id" filterable placeholder="请选择" class='inputWarn'>
               <el-option
                   v-for="item in person"
@@ -639,6 +612,8 @@
                         <el-table-column prop="reason" label="转单原因"  width="110"
                         :filters="executorFourArrayreason"
                        :filter-method="executorFourChangereason">
+
+
                         </el-table-column>
                         <el-table-column prop="remark" label="转单说明"></el-table-column>
                         <el-table-column prop="create_nickname" label="操作人"></el-table-column>
@@ -662,7 +637,7 @@
       </el-dialog>
 
       <!-- 更换执行团队 -->
-          <el-dialog  :visible.sync="executorChange2"  title="更换执行团队" :modal="false" width="550px" @close='splitClose2'>
+          <el-dialog  :visible.sync="executorChange2"  title="更换执行团队" :modal="false" width="550px">
             <div class='CustomerLeaderAllbox'>
             <el-form label-position="right" label-width="140px" :model="changeExecutor"  :rules="rules" ref="changeExecutor">
             <!-- 自营团队 -->
@@ -704,8 +679,8 @@
                 </el-form-item>
 
                 <el-form-item label="执行方 :" class='is-required'>
-                  <el-radio v-model="changeExecutor.service_type" label=1>自营团队</el-radio>
-                  <el-radio v-model="changeExecutor.service_type" label=2>服务商团队</el-radio>
+                  <el-radio v-model="changeExecutor.service_type" @change = 'change_service_type'  label=1>自营团队</el-radio>
+                  <el-radio v-model="changeExecutor.service_type" @change = 'change_service_type' label=2>服务商团队</el-radio>
                 </el-form-item>
 
                 <div v-if="changeExecutor.service_type == 1">
@@ -748,7 +723,7 @@
                   </el-form-item>
 
                   <el-form-item label="服务商 :" class='is-required'  prop="textName3">                     
-                    <el-select class="inputWarn" allow-create filterable clearable placeholder="可选择一位服务商" v-model="changeExecutor.provider">
+                    <el-select class="inputWarn" clearable placeholder="可选择一位服务商" v-model="changeExecutor.provider" filterable>
                         <el-option
                           v-for="item in CustomerBudinessMan"
                           :key="item.value"
@@ -796,23 +771,17 @@
         </el-dialog>
 
 <!-- 拆分 -->
-        <el-dialog  :visible.sync="executorChange3"  title="执行拆分" :modal="false" width="550px" class='chaifen' @close='splitClose'>
+        <el-dialog  :visible.sync="executorChange3"  title="执行拆分" :modal="false" width="550px" class='chaifen'>
             <div class='CustomerLeaderAllbox'>
             <el-form label-position="right" label-width="140px" :model="r_dataFrom"  ref="r_dataFrom">
             <!-- 自营团队 -->
               <el-row v-for="(item,index) in r_dataFrom.excutor_detail" :key = 'index'>
-                <!-- <p class='CustomerLeaderOne'>执行明细{{zhixingNum}}-{{index+1}}</p> -->
-                <div class='CustomerLeaderOne'>
-                  <span>执行明细{{zhixingNum}}-{{index+1}}</span>
-                  <!-- <el-button  type='text' v-if =" r_data.excutor_detail.length > 1" @click='deleteWork(index)' class='deleteWorkBtn'>删除</el-button>	 -->
-                <el-button  type='text' class='deleteWorkBtn' v-if =" r_dataFrom.excutor_detail.length > 1"  @click="removeRow(index)">删除</el-button>	
-
-                </div>
+                <p class='CustomerLeaderOne'>执行明细{{zhixingNum}}-{{index+1}}</p>
                 <div class="dialogSolid2"></div>
                   <el-form-item label="执行方 :" class='is-required'  :prop="'excutor_detail.' + index + '.service_type'">
                     <!-- <el-radio-group v-model="item.service_type" :key="index"> -->
-                      <el-radio disabled v-model="item.service_type" label=1>自营团队</el-radio>
-                      <el-radio disabled v-model="item.service_type" label=2>服务商团队</el-radio>
+                      <el-radio  v-model="item.service_type" label=1 @change='radioChange'>自营团队</el-radio>
+                      <el-radio  v-model="item.service_type" label=2>服务商团队</el-radio>
                     <!-- </el-radio-group> -->
                   </el-form-item>
 
@@ -822,37 +791,36 @@
                     :prop="'excutor_detail.' + index + '.excutor_leading'">
                       <el-select class="inputWarn" clearable value-key='dd_id' placeholder="可选择一位执行负责人" v-model="item.excutor_leading" filterable>
                           <el-option
-                            v-for="item in r_dataFrom.sel_excutor_leading"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
+                            v-for="item in person"
+                            :key="item.dd_id"
+                            :label="item.nickname"
+                            :value="item.dd_id">
                           </el-option>									
                         </el-select>
                     </el-form-item>
 
-                  <el-form-item label="执行人:" class='is-required'
+                  <!-- <el-form-item label="执行人:" class='is-required'
                     :prop="'excutor_detail[' + index + '].excutor_id'"
                     :rules="[{ required: true, message: '请选择一位执行人',trigger:'blur'}]"
                     > 
-                     <!-- v-if="updatePeople && item.service_type == 1"  -->
-                    <el-select class="inputWarn"
+                    <el-select  v-if="updatePeople && item.service_type == 1" class="inputWarn"
                       multiple
                       value-key="dd_id" 
                       placeholder="可选择多个执行人" 
-                      v-model="item.excutor_id"
+                      v-model="item.excutor_id[index]"
                       filterable >
                         <el-option
-                          v-for="item in r_dataFrom.sel_excutor"
-                          :key="item.value"
-                          :label="item.label"
-                          :value="item.value">
+                          v-for="item in person"
+                          :key="item.dd_id"
+                          :label="item.nickname"
+                          :value="item.dd_id">
                         </el-option>									
                       </el-select>
-                  </el-form-item>
+                  </el-form-item> -->
 
                   <!-- :prop="'domains.' + i + '.value'" -->
 
-                 <!-- <el-form-item label="执行人:" class='is-required'
+                 <el-form-item label="执行人:" class='is-required'
                   v-for="(domain,i) in r_dataFrom.excutor_detail[index].domains" :key="i"
                   > 
                     <el-select class="inputWarn"
@@ -873,38 +841,32 @@
                   </el-form-item> 
                   <el-form-item>
                     <el-button  v-if="1" @click="addDomain(index)">添加执行人</el-button>
-                  </el-form-item> -->
+                  </el-form-item>
                   
                   <!-- <el-button @click="addDomain">新增一个执行人</el-button> -->
                 </div>
 
                 <div v-if = "item.service_type == 2">
                   <el-form-item label="服务商负责人 :" class='is-required' 
-					        :rules="[{ required: true, message: '请先到更换执行步骤选择一位服务商负责人',trigger:'blur'}]"                  
+					        :rules="[{ required: true, message: '请选择一位服务商负责人',trigger:'blur'}]"                  
                   :prop="'excutor_detail.' + index + '.excutor_leading'">
                     <el-select class="inputWarn" clearable placeholder="可选择一位服务商负责人" v-model="item.excutor_leading" filterable>
-                         <el-option
-                          v-for="item in r_dataFrom.sel_excutor_leading"
-                          :key="item.value"
-                          :label="item.label"
-                          :value="item.value">
-                        </el-option>							
-                        <!-- <el-option
+                        <el-option
                           v-for="item in person"
                           :key="item.dd_id"
                           :label="item.nickname"
                           :value="item.dd_id">
-                        </el-option> -->
+                        </el-option>									
                       </el-select>
                   </el-form-item>
                  
                   <el-form-item label="服务商 :" class='is-required'
                    v-if="item.service_type == 2" 
 					        :rules="[{ required: true, message: '请选择一位服务商',trigger:'blur'}]"
-                   :prop="'excutor_detail.' + index + '.provider'">     
+                   :prop="'excutor_detail.' + index + '.provider'">                     
                     <el-select class="inputWarn" placeholder="可选择一个服务商" v-model="item.provider" filterable clearable>
                         <el-option
-                          v-for="item in r_dataFrom.personSplic"
+                          v-for="item in CustomerBudinessMan"
                           :key="item.value"
                           :label="item.label"
                           :value="item.value">
@@ -955,14 +917,14 @@
                   <span class='spanRed' style="display: none;" ref="abc">请输入价格</span>
                   <!-- </el-input> -->
                 </el-form-item>
-                <!-- <el-button class='deleteWorkBtn' v-if =" r_dataFrom.excutor_detail.length > 1"  @click="removeRow(index)">删除</el-button>	 -->
+                <el-button class='deleteWorkBtn' v-if =" r_dataFrom.excutor_detail.length > 1"  @click="removeRow(index)">删除</el-button>	
             </el-row>
 
             </el-form> 
              <!-- v-show = '如果只有一个就使其不起作用' @click='deleteWork(index)' -->
           </div> 
           <!--  @click.prevent='addWork'  -->
-        <el-button @click.prevent='addWork()'>新增明细</el-button>
+        <el-button @click.prevent='addWork'>新增明细</el-button>
             <div slot="footer" class="dialog-footer">
               <el-button @click="executorChange3 = false">取 消</el-button>
               <el-button type="primary" @click="executeSplit('r_dataFrom')">确 定</el-button>
@@ -1050,7 +1012,7 @@
 
 <!-- 更改客服团队 -->
 		<!-- <el-dialog  :visible.sync="changePeopleAe" :modal="false" @close='cancel' :title="dialogValChildTitle" width="550px" @open='whenOpen'> -->
-		<el-dialog  :visible.sync="changePeopleAe" :modal="false" title="更改" width="550px">
+		<el-dialog  :visible.sync="changePeopleAe" :modal="false" title="更改" width="550px"  @open='whenOpen'>
       <el-form label-position='right' label-width="100px"  :model="r_dataPeople" ref="r_dataPeople">									
 					<el-form-item label="负责人 :" class='is-required'>
 						<el-select  
@@ -1088,7 +1050,7 @@
 
     <!-- 更改执行明细负责人 -->
 		<!-- <el-dialog  :visible.sync="changePeopleAe" :modal="false" @close='cancel' :title="dialogValChildTitle" width="550px" @open='whenOpen'> -->
-		<el-dialog  :visible.sync="changePeopleLeader" :modal="false" title="更改" width="550px">
+		<el-dialog  :visible.sync="changePeopleLeader" :modal="false" title="更改" width="550px"  @open='whenOpen'>
       <el-form label-position='right' label-width="100px"  :model="r_dataPeople" ref="r_dataPeople">									
 					<el-form-item label="负责人 :" class='is-required'>
 						<el-select  
@@ -1124,7 +1086,7 @@
 			</span>
     </el-dialog>
 
-      <el-dialog :visible.sync="changePeopleLeader22" :modal="false" title="派单" width="550px">
+      <el-dialog :visible.sync="changePeopleLeader22" :modal="false" title="派单" width="550px"  @open='whenOpen'>
 				<el-form ref='r_dataLeder' label-position="right" label-width="120px" :model="r_dataLeder">
 					<el-form-item label="执行人 :" 
 							class='is-required'
@@ -1368,7 +1330,7 @@
                 <el-button type="primary" @click="centerDialogVisible_btn">确 定</el-button>
             </span>
     </el-dialog> -->
-    		<el-dialog :visible.sync="addExecutorDialogAE" :modal="false" title="更换" width="550px">
+    		<el-dialog :visible.sync="addExecutorDialogAE" :modal="false" title="更换" width="550px" @open='whenOpen'>
 				<div class='spaceBox'></div>
 				<el-form label-position='right' label-width="100px"  :model="r_data" ref="r_data">									
 					<el-form-item label="客服 :" class='is-required'>
@@ -1405,7 +1367,7 @@
         </span>
 		</el-dialog> 
 
-    		<el-dialog :visible.sync="addExecutorDialog" :modal="false" title="新增执行人" width="550px">
+    		<el-dialog :visible.sync="addExecutorDialog" :modal="false" title="新增执行人" width="550px" @open='whenOpen'>
     <el-form label-position="right" label-width="140px" :model="r_data" ref = 'r_data'>
 					<div class="dialogSolid"></div>  						
           	 <!-- :prop="'excutor_detail.' + index + '.service_type'"					 -->
@@ -1594,7 +1556,7 @@
       </div>
     </el-dialog>
     
-    <allDialog @dialogall='dialogall' :dialogValChildTitle='dialogAllTitle,product,dialogAll1,dialogId,menuId5,message,annexData'></allDialog>
+    <allDialog @dialogall='dialogall' :dialogValChildTitle='dialogAllTitle,dialogAll1,dialogId,menuId5,message,annexData'></allDialog>
     <beforeAllDialog @beforedialogall='beforedialogall' :dialogValChildTitle2='beforeDialogAllTitle,beforeDialogAll1,message,dialogId,annexData'></beforeAllDialog>
 
   </div>
@@ -1633,40 +1595,6 @@ export default {
       excutor_brief:true,
       excuteListData:[],
       workInReplacePeople:false,
-      // getFollowUpStatus:[
-      //    {
-      //       "text": "待启动",
-      //       "value": "待启动"
-      //   },
-      //    {
-      //      "text": "进行中",
-      //       "value": "进行中"
-      //   },
-      //   {
-      //     "text": "初稿定稿",
-      //     "value": "初稿定稿"
-      //   },
-      //   {
-      //     "text": "修改中",
-      //     "value": "修改中"
-      //   },
-      //   {
-      //     "text": "修改稿定稿",
-      //     "value": "修改稿定稿"
-      //   },
-      //   {
-      //      "text": "已完成",
-      //     "value": "已完成"
-      //   },
-      //   {
-      //     "text": "已暂停",
-      //     "value": "已暂停"
-      //   },
-      //   {
-      //     "text": "已退款",
-      //     "value": "已退款"
-      //   }
-      // ],
       rules:{
           begin_time: [
             { required: true, message: '请选择初稿时间', trigger: 'blur' }
@@ -1728,18 +1656,12 @@ export default {
         { text: '已退款', value: '已退款' }
         ],
         executorFourArrayreason:[
-          {text: '多次修改不满意', value: '多次修改不满意'},
-          {text: '设计不满意/沟通不顺畅/客户要求换设计', value: '设计不满意/沟通不顺畅/客户要求换设计'},
-          {text: '客户要求不明确/设计师提出换设计', value: '客户要求不明确/设计师提出换设计'},
-          {text: '客户长期失联/换对接人/换项目/升级设计', value: '客户长期失联/换对接人/换项目/升级设计'},
-          {text: '设计师由于其他工作/离职无法继续设计', value: '设计师由于其他工作/离职无法继续设计'},
-          {text: '无法注册', value: '无法注册'},
-          {text: '操作有误', value: '操作有误'},
+          {text: '派单不符', value: '派单不符'},
+          {text: '客户不满意', value: '客户不满意'},
+          {text: '离职', value: '离职'},
           {text: '其他', value: '其他'}
         ],
         executorFourArray:[],
-        followArray:[],
-        followNickname:[],
       detail_ids:0,
       dialogId:0,
       paginationNum:{},
@@ -1764,6 +1686,7 @@ export default {
       executorData_btn:{},
       Execution_detail_list: [],
 
+      product:[],
       ison:true,
       CustomerRadios:3,
       CustomerRadio:3,
@@ -1812,7 +1735,6 @@ export default {
       },
       // 更换AE发送数据
       replaceform: {
-        service_leading:'',
         log_status:'',
         status:1,
         manage_id: 0,
@@ -1881,9 +1803,6 @@ export default {
       r_dataFrom:{
            manage_id:0,
            detail_id:0,
-           sel_excutor_leading:[],
-           personSplic:[],
-           sel_excutor:[],
           excutor_detail:[
           { 
             service_type:'1',
@@ -1973,26 +1892,7 @@ export default {
     }
   },
   methods: {
-    getFollowUpStatusChange(value, row){
-        return row.excutor_status_desc === value;
-    },
-    followArrayChange(value, row){
-        return row.name === value;
-    },
-     followArrayChangePeople(value, row){
-        return row.nickname === value;
-    },
-    splitClose(){
-      let excutorArr = this.r_dataFrom.excutor_detail;
-      this.r_dataFrom.excutor_detail.splice(1,excutorArr.length);
-      this.r_dataFrom.sel_excutor_leading = []
-      this.r_dataFrom.sel_excutor = []
-      this.r_dataFrom.excutor_detail[0].excutor_id = []
-    },
-    splitClose2(){
-      this.changeExecutor.excutor_id = [];
-      // let excutorArr = this.changeExecutor.excutor_id;
-      // this.changeExecutor.excutor_id.splice(1,excutorArr.length);
+    change_service_type(val){
     },
     removeDomain(item,num) {
       let index = this.r_dataFrom.excutor_detail[num].domains.indexOf(item);
@@ -2145,6 +2045,15 @@ export default {
       this.changePeopleLeader = true;
       this.r_dataPeople.id = val.id;
     },
+    whenOpen(){
+        this.$get('manageNew/serviceLeading')
+          .then((data) => {
+            this.AeBossPeople = data.content;
+          })
+          .catch((data) => {
+            this.$message.error('服务器错误，请稍后重试');
+		});
+    },
    
     changePeopleAeFc(){
       // 更改提交
@@ -2265,9 +2174,9 @@ export default {
         this.r_dataFrom.excutor_detail.splice(index, 1);
         this.$forceUpdate(); 
       },
-    addWork(typeId){
+    addWork(){
       this.r_dataFrom.excutor_detail.push({ 
-            service_type:this.r_dataFrom.excutor_detail[0].service_type,
+            service_type:'1',
             excutor_leading:'',
             excutor_id:[],
             product_id:[],
@@ -2283,72 +2192,71 @@ export default {
     },
     // 执行拆分
     executeSplit(r_dataFrom){
-      var array = this.r_dataFrom.excutor_detail
-      var inputWarnPriceS = document.getElementsByClassName('inputWarnPrice');
-        for (let i = 0; i < array.length; i++) {
-          if(array[i].price == ''){
-            this.$refs.abc[i].style.display = 'block';
-            this.$refs.handleInputPrice[i].style.borderColor = '#f56c6c';
-            // return false;
-          }else{
-            this.$refs.abc[i].style.display = 'none'
-            this.$refs.handleInputPrice[i].style.borderColor = '#c3c7cf'
-          }
-      }
+      // var array = this.r_dataFrom.excutor_detail
+      // var inputWarnPriceS = document.getElementsByClassName('inputWarnPrice');
+      //   for (let i = 0; i < array.length; i++) {
+      //     if(array[i].price == ''){
+      //       this.$refs.abc[i].style.display = 'block';
+      //       this.$refs.handleInputPrice[i].style.borderColor = '#f56c6c';
+      //       // return false;
+      //     }else{
+      //       this.$refs.abc[i].style.display = 'none'
+      //       this.$refs.handleInputPrice[i].style.borderColor = '#c3c7cf'
+      //     }
+      // }
      
-      this.$refs[r_dataFrom].validate((valid) => {
-				if (valid) {
-          var array = this.r_dataFrom.excutor_detail;
-      var inputWarnPriceS = document.getElementsByClassName('inputWarnPrice');
-        for (let i = 0; i < array.length; i++) {
-          if(array[i].price == ''){
-            this.$refs.abc[i].style.display = 'block';
-            this.$refs.handleInputPrice[i].style.borderColor = '#f56c6c';
-            // return false;
-          }else{
-            this.$refs.abc[i].style.display = 'none';
-            this.$refs.handleInputPrice[i].style.borderColor = '#c3c7cf';
-            this.$post("manageNew/splitExecute", this.r_dataFrom)
-						.then(data => {
-							if (data.code) {
-								this.$message({
-									message: '拆分成功！',
-									type: "success"
-								});
-                this.r_data = {};
-                this.executorChange3 = false;
-								this.$store.commit("removeTag", "workInfo");
-								this.$store.commit("closePage", "workInfo");
-                this.workOperateLog();
-                setTimeout(() => {
-                  this.$router.go(0)
-                }, 150);
-							} else {
-								this.$message({
-									message: data.errorMsg,
-									type: "warning"
-								});
-							}
-						})
-						.catch(() => {
-							this.$message.error("服务器错误，请稍后重试..");
-						});
-          }
-      }
-				} else {
-					return false;
-				}
-			});						
+      // this.$refs[r_dataFrom].validate((valid) => {
+			// 	if (valid) {
+      //     var array = this.r_dataFrom.excutor_detail;
+      // var inputWarnPriceS = document.getElementsByClassName('inputWarnPrice');
+      //   for (let i = 0; i < array.length; i++) {
+      //     if(array[i].price == ''){
+      //       this.$refs.abc[i].style.display = 'block';
+      //       this.$refs.handleInputPrice[i].style.borderColor = '#f56c6c';
+      //       // return false;
+      //     }else{
+      //       this.$refs.abc[i].style.display = 'none';
+      //       this.$refs.handleInputPrice[i].style.borderColor = '#c3c7cf';
+      //       this.$post("manageNew/splitExecute", this.r_dataFrom)
+			// 			.then(data => {
+			// 				if (data.code) {
+			// 					this.$message({
+			// 						message: '拆分成功！',
+			// 						type: "success"
+			// 					});
+			// 					this.r_data = {};
+			// 					// this.$router.push({ name: "workInfoNew" });
+			// 					this.$store.commit("removeTag", "workInfo");
+			// 					this.$store.commit("closePage", "workInfo");
+      //           this.workOperateLog();
+			// 					this.$router.go(0)
+                
+			// 				} else {
+			// 					this.$message({
+			// 						message: data.errorMsg,
+			// 						type: "warning"
+			// 					});
+			// 				}
+			// 			})
+			// 			.catch(() => {
+			// 				this.$message.error("服务器错误，请稍后重试..");
+			// 			});
+      //     }
+      // }
+			// 	} else {
+			// 		return false;
+			// 	}
+			// });						
     },
     	//选项 产品列表
       addItem(){
-        // this.$get('crmManagement/item/addItem')
-        //   .then((data) => {
-        //     this.product = data.content.product;
-        //   })
-        //   .catch((data) => {
-        //     this.$message.error('服务器错误，请稍后重试');
-		    //   });
+        this.$get('crmManagement/item/addItem')
+          .then((data) => {
+            this.product = data.content.product;
+          })
+          .catch((data) => {
+            this.$message.error('服务器错误，请稍后重试');
+		});
 					// 服务商
       this.$get("manageNew/provider")
         .then(data => {
@@ -2385,7 +2293,7 @@ export default {
 						.then(data => {
 							if (data.code) {
 								this.$message({
-									message: '更换执行团队成功！',
+									message: '转单成功！',
 									type: "success"
 								});
 								this.replaceform = {};
@@ -2479,14 +2387,15 @@ export default {
           this.$message.error('服务器错误，请稍后重试');
         })
         
-        this.$get( 'manageNew/getChangeAeReason')
-        .then((data) => {
-          var dataS = data.content;
-            // this.executorFourArrayreason.push(dataS);
-        })
-        .catch(() => {
-          this.$message.error('服务器错误1，请稍后重试');
-        })
+
+        // this.$get( 'manageNew/getChangeAeReason')
+        // .then((data) => {
+        //   var dataS = data.content;
+        //     this.executorFourArrayreason.push(dataS);
+        // })
+        // .catch(() => {
+        //   this.$message.error('服务器错误，请稍后重试');
+        // })
       this.executorFour = true;
     },
     executorChange2f(val){
@@ -2512,24 +2421,16 @@ export default {
             this.changeExecutor.price = data.content.price;
             this.changeExecutor.product_brief = data.content.product_brief;
             this.changeExecutor.service_type = data.content.service_type;
-            var dataArr = data.content.excutor_id;
-              if(data.content.sel_provider.length > 0){
-                  this.changeExecutor.provider = parseInt(data.content.sel_provider[0].value);
-              }
-            //  this.changeExecutor.excutor_id = [];
-          //  if(this.changeExecutor.excutor_id.length == 0){
-             for (let i = 0; i < data.content.sel_excutor.length; i++) {
-              this.changeExecutor.excutor_id.push(data.content.sel_excutor[i].value)
+             var dataArr = data.content.excutor_id;
+            if(data.content.service_type == 2){
+             this.changeExecutor.provider = parseInt(dataArr.join(''))
+             this.changeExecutor.excutor_id = [];
+            }else{
+              this.changeExecutor.excutor_id = data.content.excutor_id;
             }
-          //  }
-            
-            // this.changeExecutor.excutor_id = ['096710455124280617']
-            // 096710455124280617
-
-              // this.changeExecutor.excutor_id = data.content.sel_excutor;
         })
         .catch(() => {
-          this.$message.error('服务器错误1，请稍后重试');
+          this.$message.error('服务器错误，请稍后重试');
         })
 //更换AE原因
         this.$get( 'manageNew/getChangeAeReason')
@@ -2542,34 +2443,26 @@ export default {
     },
 
     executorChange3f(scopeRow){
+      
       this.addItem();
       this.zhixingNum = scopeRow.num;
       this.r_dataFrom.detail_id = scopeRow.id;
+
         this.$get( 'manageNew/oneExecuteDetail', {
           id: scopeRow.id
         })
         .then((data) => {
-            var strArr = data.content;
-            // if(){}
-            this.r_dataFrom.sel_excutor_leading.push(strArr.sel_excutor_leading);
-            this.r_dataFrom.personSplic = strArr.sel_provider;
-              this.r_dataFrom.sel_excutor = strArr.sel_excutor;
-            
+            var strArr = data.content
             this.r_dataFrom.excutor_detail[0].service_type = strArr.service_type.toString();
             this.r_dataFrom.excutor_detail[0].price = strArr.price;
-
             this.r_dataFrom.excutor_detail[0].excutor_leading = strArr.excutor_leading;
-
             this.r_dataFrom.excutor_detail[0].product_brief = strArr.product_brief;
             this.r_dataFrom.excutor_detail[0].product_id = strArr.product_ids;
-
             if(strArr.service_type == 2){
-              this.r_dataFrom.excutor_detail[0].provider = strArr.sel_provider[0].value;
-              // parseInt(strArr.excutor_id[0]);
+              this.r_dataFrom.excutor_detail[0].provider = parseInt(strArr.excutor_id[0])
+              // this.r_dataFrom.excutor_id = [];
             }else{
-              for (let i = 0; i < strArr.sel_excutor.length; i++) {
-                 this.r_dataFrom.excutor_detail[0].excutor_id.push(strArr.sel_excutor[i].value);
-              }
+              this.r_dataFrom.excutor_detail[0].excutor_id = strArr.excutor_id;
             }
         })
         .catch(() => {
@@ -2587,6 +2480,15 @@ export default {
             this.r_dataFrom.excutor_detail[0].domains.push({value: '',key: Date.now()});
           }
       }
+      // this.r_dataFrom.excutor_detail[0].domains[0].value = scopeRow.excutor;
+      // this.r_dataFrom.excutor_detail[0].service_type = scopeRow.type.toString();
+      // this.r_dataFrom.excutor_detail[0].price = scopeRow.price;
+      // this.r_dataFrom.excutor_detail[0].excutor_leading = scopeRow.excutor_leading;
+      // this.r_dataFrom.excutor_detail[0].product_brief = scopeRow.product_brief;
+      //  this.r_dataFrom.excutor_detail[0].domains[0].value = scopeRow.excutor;
+      // this.r_dataFrom.excutor_detail[0].excutor_id[0] = scopeRow.excutor_dd_ids;
+      // this.r_dataFrom.excutor_detail[0].product_id = [1,4,1];
+      //  scopeRow.pro_info;
       this.executorChange3 = true;
     },
     
@@ -2619,10 +2521,8 @@ export default {
             page:currentPage
           })
           .then((data) => {
-              this.eyeChangeRecord = data.content.data; 
+             this.eyeChangeRecord = data.content.data; 
               this.paginationNum = data.content;
-              this.followArray = data.content.product_name;
-              this.followNickname = data.content.nickname;
           })
           .catch(() => {
             this.$message.error('服务器错误，请稍后重试');
@@ -2674,16 +2574,12 @@ export default {
         manage_id: this.$route.query.manage_id,
       })
           .then((data) => {
-            if(data.code){
-              this.workOrnderLength = data.content;
-              this.r_data.pro_id = objs.product.map(Number);
-            }else{
-              this.$message.error(data.errorMsg);
-            }
+            this.workOrnderLength = data.content;
+            this.r_data.pro_id = objs.product.map(Number);
             // this.formAll.domains[0].value = this.ruleForm.pro_id;
           })
           .catch(() => {
-            this.$message.error('服务器错误，请稍后重试');
+            this.$message.error('服务器错误22，请稍后重试');
           })
       },
     // 工单共用事件
@@ -2721,14 +2617,10 @@ export default {
     handleClick(scopeData) {
        this.$get( 'manageNew/getChangeAeReason')
           .then((data) => {
-            if(data.code){
-              this.reasons = data.content;
-            }else{
-              this.$message.error(data.errorMsg);
-            }
+            this.reasons = data.content;
           })
           .catch(() => {
-            this.$message.error('服务器错误，请稍后重试');
+            this.$message.error('服务器错误22，请稍后重试');
           })
       if (scopeData.operation == "取消") {
         this.r_data.excute_detail_id = scopeData.id;
@@ -2858,14 +2750,9 @@ export default {
     },
     // 更换客服 workInReplaceTAe
     workInReplaceTAe() {
-      	if(!this.replaceform.service_leading){
+      	if(!this.replaceform.new_dd_id){
 					this.$message({
-                    message: '请选择客服负责人',
-                    type: 'warning'
-                });
-				}else if(!this.replaceform.new_dd_id){
-					this.$message({
-                    message: '请选择客服',
+                    message: '请选择执行人',
                     type: 'warning'
                 });
 				}else if(!this.replaceform.result){
@@ -2873,26 +2760,30 @@ export default {
                     message: '请选择更换原因',
                     type: 'warning'
                 });
-        } else{
+        }
+        // else if(!this.replaceform.brife){
+        //         this.$message({
+        //             message: '请确认brief是否需要转移',
+        //             type: 'warning'
+        //         });
+        // }
+        else{
       this.$post("manageNew/changeAe", this.replaceform)
         .then(data => {
           if (data.code) {
             this.$message({
-              message: '更换客服成功！',
+              message: '更换成功！',
               type: "success"
             });
             this.workInReplace = false;
             this.replaceform = {};
+            // this.workData();
             this.$store.commit("removeTag", "workInfo");
 			      this.$store.commit("closePage", "workInfo");
             this.workOperateLog();
             this.$router.go(0)
           } else {
             this.$message.error(data.errorMsg);
-            // this.$message({
-            //   message:data.errorMsg,
-            //   type: "warning"
-            // });
           }
         })
         .catch(() => {
@@ -2913,7 +2804,14 @@ export default {
             message: '请选择更换原因',
             type: 'warning'
           });
-        }else{
+        }
+        // else if(!this.replaceform.brife){
+        //         this.$message({
+        //             message: '请确认brief是否需要转移',
+        //             type: 'warning'
+        //         });
+        // }
+        else{
       this.$post("managePresale/changeSaleManage", this.replaceform)
         .then(data => {
           if (data.code) {
@@ -2925,6 +2823,7 @@ export default {
             this.$store.commit("removeTag", "workInfo");
 			      this.$store.commit("closePage", "workInfo");
             this.replaceform = {};
+            // this.workData();
             this.workOperateLog();
             this.$router.go(0)
           } else {
@@ -3029,6 +2928,8 @@ export default {
     workReject() {
       this.workInfoReject = true;
     },
+
+
     // 显示派单的loading框
     show() {
       this.centerDialogVisible = true;
@@ -3257,7 +3158,6 @@ export default {
             this.executorDataleading = data.content.service.service_leading;
             this.executorDataleadingAe = data.content.service.ae;
             this.executorData.push(data.content.service);
-            this.replaceform.service_leading = data.content.service.service_leading;
             this.executorData_btn = data.content.service.btn;
             this.editNum = data.content.service.edit;
             this.Execution_detail_list = data.content.executor;
@@ -3545,27 +3445,8 @@ export default {
     this.workOperateLog();
     this.fileListAll();
 
-      setTimeout(() => {
-        this.$get('manageNew/productInfo')
-            .then((data) => {
-              this.product = data.content.product;
-            })
-            .catch((data) => {
-              this.$message.error('服务器错误，请稍后重试');
-            });
-      }, 500);
-      // if(this.work_type == 2){
-      //   setTimeout(() => {
-      //       this.$get('crmManagement/item/addItem')
-      //           .then((data) => {
-      //             this.product = data.content.product;
-      //           })
-      //           .catch((data) => {
-      //             this.$message.error('服务器错误，请稍后重试');
-      //           });
-      //     }, 500);
-      // }
-    
+    // this.dismantlingSelect();
+   
   }
   ,
    mounted(){

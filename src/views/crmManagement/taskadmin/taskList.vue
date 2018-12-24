@@ -83,7 +83,6 @@
                 if(tab.name == -1) {
                     this.$get('task/list')
                         .then((data) => {
-                            console.log(data)
                             if(data.code) {
                                 let show = data.content;
                                 this.not_begin = show.not_begin;

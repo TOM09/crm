@@ -35,7 +35,6 @@ export default {
   },
   methods:{
     inquiryClick(row) {
-      // console.log(row);
       this.$router.push({name:'inquiryDetail',params:{id:row.id}})
     }
   }

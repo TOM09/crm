@@ -1,8 +1,8 @@
 <template>
   <div class="orderSearch">
     <el-collapse accordion>
-      <el-collapse-item>
-        <template slot="title">
+      <el-collapse-item class='clickTitle'>
+        <template slot="title" >
           点击展开搜索列表<i class="header-icon el-icon-information"></i>
         </template>
         <el-form ref="ruleform" :model="ruleform" label-position="right" label-width='100px'>
@@ -42,14 +42,18 @@
             </el-cascader>
           </el-form-item>
           <el-form-item prop="stage" label="状态" class="s_order_item">
-            <el-select v-model="ruleform.stage" clearable filterable placeholder="请选择" class="s_order_search">
-              <el-option
-                  v-for="item in orderData.status"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-              </el-option>
-            </el-select>
+            <el-cascader 
+              expand-trigger="hover"
+              change-on-select
+              filterable 
+              clearable
+              class="s_order_search"
+              :options="searchList"
+              v-model="ruleform.task_type" 
+              @change="handleChange"
+              >
+            </el-cascader>
+
           </el-form-item>
           <el-form-item  label="公司" class="s_order_item">
             <el-select v-model="profile" @change="handleCompany" placeholder="请选择" filterable clearable>
@@ -143,6 +147,7 @@
 
     data() {
       return {
+        searchList:[],
         pickerOptions: {
           shortcuts: [{
             text: '最近一周',
@@ -182,7 +187,7 @@
           partner: '',
           success_time:[], //承担日期
           create_time:[], //创建日期
-          stage:'',
+          stage:[],
           pro: [],
           range: (this.range ? this.range : ''),
         },
@@ -234,7 +239,6 @@
       orderPerson(){
         this.$get('getDeptPersonList',{dept:this.ruleform.dept})
           .then( (data) => {
-            console.log(data)
             this.orderData.salesman = data;
           })
           .catch(() => {
@@ -259,6 +263,16 @@
       if(!this.orderData.trench) {
         this.orderData.trench = [];
       }
+
+      
+       this.$get( 'manageNew/manageList')
+          .then ( (data) => {
+            this.searchList = data.content.step;
+          })
+          .catch (() => {
+            this.$message.error('服务器错误，请稍后重试');
+          })
+      
     },
     activated () {
       this.$store.dispatch('dept',{});
@@ -266,7 +280,7 @@
   }
 </script>
 
-<style lang="less">
+<style lang="less" type='scoped'>
   .orderSearch {
     .s_order_search{
       width: 220px;
@@ -287,6 +301,9 @@
     }
     .el-collapse-item__header{
       text-align: center;
+    }
+    .clickTitle .el-collapse-item__header{
+      display: block!important;
     }
   }
 </style>

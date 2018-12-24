@@ -19,7 +19,6 @@
         </div>
         <div style="margin-top: 20px;float: left;margin-bottom:20px;">
           <el-button type="primary" @click="queryClient">查询</el-button>
-          {{menuList}}
         </div>
       </el-form>
     </el-card>
@@ -403,6 +402,15 @@
         },{
           cost_type: 4,
           label: '派单'
+        }, {
+            cost_type: 11,
+            label: '顾问推广'
+        }, {
+            cost_type: 12,
+            label: '优选派单'
+        }, {
+            cost_type: 13,
+            label: '严选派单'
         }],
         line: [{
           cost_type: 5,
@@ -461,7 +469,6 @@
         this.ruleForm.client_id = '';
         let form = {};
         form.clientData = this.ruleForm.clientData;
-        console.log(form)
         this.$post('consult/clientSearch',form)
           .then((data) => {
             if(data.code) {

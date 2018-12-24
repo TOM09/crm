@@ -399,7 +399,7 @@
           <el-form-item label="附件备注">
             <el-input
                 placeholder="请输入附件备注"
-                v-model="proposal.remarks"
+                v-model="proposal.brife"
                 type="textarea"
                 :rows="5"
                 class="s_item_form">
@@ -536,8 +536,8 @@
           call_that: '',
           expect: '',
           description: '',
-          remarks: '',
           file: [],
+          brife:'',
           id: '',
         },
         formAll:{
@@ -618,7 +618,6 @@
       },
       //选择产品
       orderBtn () {
-        console.log(1)
         let pro_arr = this.product;
         for(let i = 0; i < pro_arr.length; i++){
           for(let j = 0; j < pro_arr[i]['children'].length; j++){
@@ -713,7 +712,7 @@
           name: 'workInfo',
           query: {
             manage_id: row.manage_id,
-            task_id: row.task_id
+            work_type: 1
           }
         })
       },
@@ -942,7 +941,7 @@
       // 发起售前调用
       onSubmit() {
         this.proposal.id = this.date.id;
-        this.$post( 'manage/manageProject',this.proposal)
+        this.$post( 'managePresale/manageProject',this.proposal)
           .then( (data) => {
             if(data.code){
               this.$message({
@@ -957,7 +956,8 @@
                 name: 'workInfo',
                 query: {
                   manage_id: data.content.manage_id,
-                  task_id: data.content.task_id
+                  // task_id: data.content.task_id
+                  work_type:1
                 }
               })
             } else {
@@ -969,7 +969,7 @@
           })
       },
       projectManage () {
-        this.$get( 'manage/projectManage',{id: this.$route.params.id})
+        this.$get( 'managePresale/projectManage',{id: this.$route.params.id})
           .then ( (data) => {
             if(data.code){
               this.itemProjectData = data.content

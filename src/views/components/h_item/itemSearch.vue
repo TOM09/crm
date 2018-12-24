@@ -1,7 +1,7 @@
 <template>
   <div class="itemList_top">
     <el-collapse accordion>
-      <el-collapse-item  name="1">
+      <el-collapse-item  name="1" class='clickOpen'>
         <template slot="title">
           点击展开搜索列表<i class="header-icon el-icon-information"></i>
         </template>
@@ -244,7 +244,7 @@
 
   }
 </script>
-<style lang="less">
+<style lang="less" >
   .itemList_top{
     .el-collapse-item__header{
       text-align: center;
@@ -260,6 +260,9 @@
     }
     .top_btn{
       float: left;
+    }
+    .clickOpen .el-collapse-item__header{
+      display: block;
     }
   }
 </style>
